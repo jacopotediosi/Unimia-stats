@@ -1,0 +1,5 @@
+[mysqld]
+performance_schema=0
+wait_timeout=28800
+innodb_log_file_size=128M
+max_allowed_packet=128M

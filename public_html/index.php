@@ -1,0 +1,955 @@
+<?php
+// DB Connection
+$db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
+
+// N months
+$n_months_long_term  = 3; // Used when query/graph details day by day
+$n_months_short_term = 1; // Used when query/graph summarizes by hours/days of week
+
+// First date
+$first_date   = $db->query("SELECT DATE(datetime) FROM stats ORDER BY datetime asc LIMIT 1")->fetch_row()[0];
+
+// Uptime summary
+$uptime_today = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 24 HOUR")->fetch_row();
+$uptime_week  = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 7 DAY")->fetch_row();
+$uptime_month = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY")->fetch_row();
+$uptime_all   = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats")->fetch_row();
+
+// Uptime in last n months
+$uptime_last_n_months = $db->query("
+SELECT t1.date,
+100/(
+	SELECT COUNT(*) FROM stats t2
+	WHERE date(t2.datetime)=t1.date AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+)*(
+	SELECT COUNT(*) FROM stats t2
+	WHERE date(t2.datetime)=t1.date AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+) as uptime_percentage
+FROM (
+	SELECT DISTINCT date(datetime) as date
+	FROM stats
+	WHERE datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+) t1
+ORDER BY date ASC
+");
+$uptime_last_n_months_array = [];
+while ($row = mysqli_fetch_assoc($uptime_last_n_months)) {
+	$uptime_last_n_months_array[$row['date']] = $row['uptime_percentage'];
+}
+
+// Uptime time during week
+$uptime_during_week = $db->query("
+SELECT t1.dayname,
+100/(
+	SELECT COUNT(*) FROM stats t2
+	WHERE dayname(t2.datetime)=t1.dayname AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+)*(
+	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+) as uptime_percentage
+FROM (
+	SELECT DISTINCT dayname(datetime) as dayname
+	FROM stats
+	WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+) t1
+ORDER BY FIELD(dayname , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday', 'Sunday')
+");
+$uptime_during_week_array = [];
+while ($row = mysqli_fetch_assoc($uptime_during_week)) {
+	$uptime_during_week_array[$row['dayname']] = $row['uptime_percentage'];
+}
+
+// Uptime during day
+$uptime_during_day = $db->query("
+SELECT t1.hour,
+100/(
+	SELECT COUNT(*) FROM stats t2
+	WHERE hour(t2.datetime)=t1.hour AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+)*(
+	SELECT COUNT(*) FROM stats t2 WHERE hour(t2.datetime)=t1.hour AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+) as uptime_percentage
+FROM (
+	SELECT DISTINCT hour(datetime) as hour
+	FROM stats
+	WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+) t1
+ORDER BY hour ASC
+");
+$uptime_during_day_array = [];
+while ($row = mysqli_fetch_assoc($uptime_during_day)) {
+	$uptime_during_day_array[$row['hour']] = $row['uptime_percentage'];
+}
+
+// Response time summary
+$response_time_today = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 24 HOUR AND is_up=1")->fetch_row()[0];
+$response_time_week  = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 7 DAY AND is_up=1")->fetch_row()[0];
+$response_time_month = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY AND is_up=1")->fetch_row()[0];
+$response_time_all   = (int) $db->query("SELECT avg(response_time) FROM stats WHERE is_up=1")->fetch_row()[0];
+
+// Response time in last n months
+$response_time_last_n_months = $db->query("
+SELECT date(datetime) AS date, avg(response_time) AS avg
+FROM stats
+WHERE datetime >= NOW() - INTERVAL $n_months_long_term MONTH AND is_up=1
+GROUP BY date(datetime)
+ORDER BY date ASC
+");
+$response_time_last_n_months_array = [];
+while ($row = mysqli_fetch_assoc($response_time_last_n_months)) {
+	$response_time_last_n_months_array[$row['date']] = $row['avg'];
+}
+
+// Response time during week
+$response_time_during_week = $db->query("
+SELECT DAYNAME(datetime) AS dayname, avg(response_time) AS avg
+FROM stats
+WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH AND is_up=1
+GROUP BY DAYNAME(datetime)
+ORDER BY FIELD(dayname , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday', 'Sunday')
+");
+$response_time_during_week_array = [];
+while ($row = mysqli_fetch_assoc($response_time_during_week)) {
+	$response_time_during_week_array[$row['dayname']] = $row['avg'];
+}
+
+// Response time during day
+$response_time_during_day = $db->query("
+SELECT hour(datetime) AS hour, avg(response_time) AS avg
+FROM stats WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH AND is_up=1
+GROUP BY hour(datetime)
+ORDER BY hour ASC
+");
+$response_time_during_day_array = [];
+while ($row = mysqli_fetch_assoc($response_time_during_day)) {
+	$response_time_during_day_array[$row['hour']] = $row['avg'];
+}
+
+// Detailed view uptime
+$detailed_view_uptime = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE date(datetime) = date(NOW())")->fetch_row();
+
+// Detailed view response time
+$detailed_view_response_time_avg = (int) $db->query("SELECT avg(response_time) FROM stats WHERE date(datetime) = date(NOW()) AND is_up=1")->fetch_row()[0];
+$detailed_view_response_time_min = (int) $db->query("SELECT min(response_time) FROM stats WHERE date(datetime) = date(NOW()) AND is_up=1")->fetch_row()[0];
+$detailed_view_response_time_max = (int) $db->query("SELECT max(response_time) FROM stats WHERE date(datetime) = date(NOW()) AND is_up=1")->fetch_row()[0];
+
+// Detailed view time graph
+$detailed_view_time = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') as time, response_time, reason FROM stats WHERE date(datetime) = date(NOW()) ORDER by time ASC");
+$detailed_view_time_array = [];
+while ($row = mysqli_fetch_assoc($detailed_view_time)) {
+	$detailed_view_time_array[$row['time']] = [
+		'response_time' => $row['response_time'],
+		'reason'        => $row['reason']
+	];
+}
+?>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Unimia stats</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+		<!-- Bootstrap datepicker CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.standalone.min.css" integrity="sha512-p4vIrJ1mDmOVghNMM4YsWxm0ELMJ/T0IkdEvrkNHIcgFsSzDi/fV7YxzTzb3mnMvFPawuIyIrHcpxClauEfpQg==" crossorigin="anonymous">
+
+		<style type="text/css">
+			.datepicker, .table-condensed {
+				width: 300px;
+				height: 300px;
+			}
+			html {
+				scroll-padding-top: 56px;
+			}
+			body {
+				padding-top: 56px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- Navbar -->
+		<nav class="navbar navbar-expand-sm navbar-dark fixed-top bg-dark">
+			<a class="navbar-brand" href="#">Unimia stats</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Uptime</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="#uptime_summary">Summary</a>
+							<a class="dropdown-item" href="#uptime_last_n_months">In last 3 months</a>
+							<a class="dropdown-item" href="#uptime_during_week">During week (last 1 month)</a>
+							<a class="dropdown-item" href="#uptime_during_day">During day (last 1 month)</a>
+						</div>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time (when up)</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="#response_time_summary">Summary</a>
+							<a class="dropdown-item" href="#response_time_last_n_months">In last 3 months</a>
+							<a class="dropdown-item" href="#response_time_during_week">During week (last 1 month)</a>
+							<a class="dropdown-item" href="#response_time_during_day">During day (last 1 month)</a>
+						</div>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Detailed view</a>
+						<div class="dropdown-menu dropdown-menu-right">
+							<a class="dropdown-item" href="#detailed_view_pick_date">Pick a date</a>
+							<a class="dropdown-item" href="#detailed_view_uptime">Average uptime on selected date</a>
+							<a class="dropdown-item" href="#detailed_view_response_time">Response time on selected date</a>
+							<a class="dropdown-item" href="#detailed_view_time_graph">Data collected on selected date</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<!-- Container -->
+		<div class="container-fluid mb-4">
+			<!-- UPTIME -->
+			<h1 class="mt-3 mb-4 display-4">Uptime</h1>
+
+			<!-- Summary -->
+			<h2 id="uptime_summary" class="mt-3 mb-4 mb-md-3 text-center">Summary</h2>
+			<div class="row text-center">
+				<div class="col-lg-3 col-sm-6">
+					<canvas id="uptime1_canvas" class="mb-2"></canvas>
+					<h5 class="mb-4 mb-lg-2">Last 24 hours</h5>
+				</div>
+				<div class="col-lg-3 col-sm-6">
+					<canvas id="uptime2_canvas" class="mb-2"></canvas>
+					<h5 class="mb-4 mb-lg-2">Last 7 days</h5>
+				</div>
+				<div class="col-lg-3 col-sm-6">
+					<canvas id="uptime3_canvas" class="mb-2"></canvas>
+					<h5 class="mb-4 mb-sm-2">Last 30 days</h5>
+				</div>
+				<div class="col-lg-3 col-sm-6">
+					<canvas id="uptime4_canvas" class="mb-2"></canvas>
+					<h5>Since <?php echo $first_date; ?></h5>
+				</div>
+			</div>
+
+			<!-- In last n months -->
+			<h2 id="uptime_last_n_months" class="mt-3 mb-4 mb-md-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
+			<div style="height: 300px">
+				<canvas id="uptime_last_n_months_canvas"></canvas>
+			</div>
+			
+
+			<div class="row text-center">
+				<!-- During week -->
+				<div class="col-lg-6">
+					<h2 id="uptime_during_week" class="mt-3 mb-4 mb-md-3">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+					<div style="height: 300px">
+						<canvas id="uptime_during_week_canvas"></canvas>
+					</div>
+				</div>
+				<!-- During day -->
+				<div class="col-lg-6">
+					<h2 id="uptime_during_day" class="mt-3 mb-4 mb-md-3">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+					<div style="height: 300px">
+						<canvas id="uptime_during_day_canvas"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- AVERAGE RESPONSE TIME -->
+			<h1 class="mt-5 mb-4 mb-sm-5 display-4">Average response time (when up)*</h1>
+
+			<!-- Summary -->
+			<h2 id="response_time_summary" class="mt-3 mb-4 mb-md-3 text-center">Summary</h2>
+			<div class="row text-center my-5">
+				<div class="col-lg-3 col-sm-6 mb-5 mb-lg-2">
+					<h3><?php echo $response_time_today; ?> ms</h3>
+					<h5>Last 24 hours</h5>
+				</div>
+				<div class="col-lg-3 col-sm-6 mb-5 mb-lg-2">
+					<h3><?php echo $response_time_week; ?> ms</h3>
+					<h5>Last 7 days</h5>
+				</div>
+				<div class="col-lg-3 col-sm-6">
+					<h3><?php echo $response_time_month; ?> ms</h3>
+					<h5 class="mb-5 mb-sm-2">Last 30 days</h5>
+				</div>
+				<div class="col-lg-3 col-sm-6">
+					<h3><?php echo $response_time_all; ?> ms</h3>
+					<h5>Since <?php echo $first_date; ?></h5>
+				</div>
+			</div>
+
+			<!-- In last n months -->
+			<h2 id="response_time_last_n_months" class="mt-3 mb-4 mb-md-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
+			<div style="height: 300px">
+				<canvas id="response_time_last_n_months_canvas"></canvas>
+			</div>
+
+			<div class="row text-center">
+				<!-- During week -->
+				<div class="col-lg-6">
+					<h2 id="response_time_during_week" class="mt-3 mb-4 mb-md-3">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+					<div style="height: 300px">
+						<canvas id="response_time_during_week_canvas"></canvas>
+					</div>
+				</div>
+				<!-- During day -->
+				<div class="col-lg-6">
+					<h2 id="response_time_during_day" class="mt-3 mb-4 mb-md-3">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+					<div style="height: 300px">
+						<canvas id="response_time_during_day_canvas"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- DETAILED VIEW -->
+			<h1 class="mt-5 mb-5 display-4">Detailed view</h1>
+
+			<div class="row text-center mb-4">
+				<!-- Calendar -->
+				<div class="col-lg-4 mb-4 mb-lg-0">
+					<div class="d-flex flex-column h-100">
+						<h2 id="detailed_view_pick_date" class="mb-4 mb-md-3">Pick a date</h2>
+						<div class="d-flex flex-column h-100">
+							<div id="detailed_view_calendar" class="d-inline-block mx-auto"></div>
+						</div>
+					</div>
+				</div>
+				<!-- Average uptime -->
+				<div class="col-md-6 col-lg-4 mb-4 mb-md-0">
+					<div class="d-flex flex-column h-100">
+						<h2 id="detailed_view_uptime" class="mb-4 mb-md-3">Average uptime on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?></span></h2>
+						<div class="my-auto">
+							<canvas id="detailed_view_uptime_canvas" class="mb-2"></canvas>
+						</div>
+					</div>
+				</div>
+				<!-- Response time (avg, min, max) -->
+				<div class="col-md-6 col-lg-4">
+					<div class="d-flex flex-column h-100">
+						<h2 id="detailed_view_response_time" class="mb-4 mb-md-3">Response time on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?>*</span></h2>
+						<div class="my-auto py-3">
+							<h4>Avg: </h4>
+							<h3 id="detailed_view_response_time_avg"><?php echo $detailed_view_response_time_avg; ?> ms</h3><br>
+							<div class="row text-center align-items-center">
+								<div class="col-6">
+									<h4>Min: </h4>
+									<h3 id="detailed_view_response_time_min"><?php echo $detailed_view_response_time_min; ?> ms</h3>
+								</div>
+								<div class="col-6">
+									<h4>Max: </h4>
+									<h3 id="detailed_view_response_time_max"><?php echo $detailed_view_response_time_max; ?> ms</h3>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Time graph -->
+			<h2 id="detailed_view_time_graph" class="mt-3 mb-4 mb-md-3 text-center">Data collected on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?>*</span></h2>
+			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the screenshots taken when Unimia was down</p>
+			<div style="height: 400px">
+				<canvas id="detailed_view_time_canvas"></canvas>
+			</div>
+
+			<!-- Clarifications -->
+			<p class="text-muted mt-4">*Response times include the time to login to the CAS</p>
+		</div>
+
+		<!-- Jquery -->
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+		<!-- Bootstrap JS -->
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+		<!-- Bootstrap datepicker JS -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+		<!-- Chart.js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
+
+		<!-- Uptime pie charts -->
+		<script type="text/javascript">
+			chart_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
+			chart_datas = [
+				[<?php echo $uptime_today[0]; ?>, <?php echo $uptime_today[1]; ?>],
+				[<?php echo $uptime_week[0]; ?>, <?php echo $uptime_week[1]; ?>],
+				[<?php echo $uptime_month[0]; ?>, <?php echo $uptime_month[1]; ?>],
+				[<?php echo $uptime_all[0]; ?>, <?php echo $uptime_all[1]; ?>]
+			];
+
+			for (var i = 0; i < 4; i++) {
+				new Chart(document.getElementById(chart_ids[i]), {
+					type: 'doughnut',
+					data: {
+						labels: ['UP', 'DOWN'],
+						datasets: [{
+							data: chart_datas[i],
+							backgroundColor: [
+								'green',
+								'red'
+							]
+						}]
+					},
+					options: {
+						legend: {
+							display: false
+						},
+						tooltips: {
+							callbacks: {
+								label: (tooltipItems, data) => {
+									return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' times checked';
+								}
+							}
+						}
+					},
+					plugins: [{
+						beforeDraw: function (chart) {
+							var width = chart.chart.width,
+								height = chart.chart.height,
+								ctx = chart.chart.ctx;
+
+							ctx.restore();
+							ctx.font = (height / 150).toFixed(2) + "em sans-serif";
+							ctx.textBaseline = "middle";
+
+							var text = Math.round(100/(chart.data.datasets[0].data[0]+chart.data.datasets[0].data[1])*chart.data.datasets[0].data[0])+"%",
+								textX = Math.round((width - ctx.measureText(text).width) / 2),
+								textY = height / 2 - (chart.titleBlock.height - 3);
+
+							ctx.fillText(text, textX, textY);
+							ctx.save();
+						}
+					}]
+				});
+			}
+		</script>
+
+		<!-- Uptime in last n months graph -->
+		<script type="text/javascript">
+			uptime_last_n_months_chart = new Chart(document.getElementById('uptime_last_n_months_canvas'), {
+				type: 'line',
+				data: {
+					labels: <?php echo json_encode(array_keys($uptime_last_n_months_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_values($uptime_last_n_months_array)); ?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Uptime'
+							},
+							ticks: {
+								max: 100,
+								callback: function(value, index, values) {
+									return value + '%';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Date'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return [
+									'Uptime: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%',
+									'Click to see this date details'
+								];
+							}
+						}
+					}
+				}
+			});
+
+			document.getElementById('uptime_last_n_months_canvas').onclick = function (evt) {
+				var clicked_points = uptime_last_n_months_chart.getElementAtEvent(evt);
+				if (clicked_points.length) {
+					detailed_view_change_date(uptime_last_n_months_chart.data.labels[clicked_points[0]._index]);
+					$('html,body').animate({
+						'scrollTop':   $('#detailed_view_uptime').offset().top-56
+					}, 'slow');
+				}
+			};
+		</script>
+
+		<!-- Uptime during week graph -->
+		<script type="text/javascript">
+			new Chart(document.getElementById('uptime_during_week_canvas'), {
+				type: 'bar',
+				data: {
+					labels: <?php echo json_encode(array_keys($uptime_during_week_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_values($uptime_during_week_array)); ?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Uptime'
+							},
+							ticks: {
+								max: 100,
+								callback: function(value, index, values) {
+									return value + '%';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Day'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%';
+							}
+						}
+					}
+				}
+			});
+		</script>
+
+		<!-- Uptime during day graph -->
+		<script type="text/javascript">
+			new Chart(document.getElementById('uptime_during_day_canvas'), {
+				type: 'line',
+				data: {
+					labels: <?php echo json_encode(array_keys($uptime_during_day_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_values($uptime_during_day_array)); ?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Uptime'
+							},
+							ticks: {
+								max: 100,
+								callback: function(value, index, values) {
+									return value + '%';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Hour'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%';
+							}
+						}
+					}
+				}
+			});
+		</script>
+
+		<!-- Average response time in last n months graph -->
+		<script type="text/javascript">
+			response_time_last_n_months_chart = new Chart(document.getElementById('response_time_last_n_months_canvas'), {
+				type: 'line',
+				data: {
+					labels: <?php echo json_encode(array_keys($response_time_last_n_months_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_values($response_time_last_n_months_array)); ?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Avg response time'
+							},
+							ticks: {
+								callback: function(value, index, values) {
+									return value + ' ms';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Date'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return [
+									'Response time: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms',
+									'Click to see this date details'
+								];
+							}
+						}
+					}
+				}
+			});
+		
+			document.getElementById('response_time_last_n_months_canvas').onclick = function (evt) {
+				var clicked_points = response_time_last_n_months_chart.getElementAtEvent(evt);
+				if (clicked_points.length) {
+					detailed_view_change_date(response_time_last_n_months_chart.data.labels[clicked_points[0]._index]);
+					$('html,body').animate({
+						'scrollTop':   $('#detailed_view_uptime').offset().top-56
+					}, 'slow');
+				}
+			};
+		</script>
+
+		<!-- Average response time during week graph -->
+		<script type="text/javascript">
+			new Chart(document.getElementById('response_time_during_week_canvas'), {
+				type: 'bar',
+				data: {
+					labels: <?php echo json_encode(array_keys($response_time_during_week_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_values($response_time_during_week_array)); ?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Avg response time'
+							},
+							ticks: {
+								callback: function(value, index, values) {
+									return value + ' ms';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Day'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms';
+							}
+						}
+					}
+				}
+			});
+		</script>
+
+		<!-- Average response time during day graph -->
+		<script type="text/javascript">
+			new Chart(document.getElementById('response_time_during_day_canvas'), {
+				type: 'line',
+				data: {
+					labels: <?php echo json_encode(array_keys($response_time_during_day_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_values($response_time_during_day_array)); ?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Avg response time'
+							},
+							ticks: {
+								callback: function(value, index, values) {
+									return value + ' ms';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Hour'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms';
+							}
+						}
+					}
+				}
+			});
+		</script>
+
+		<!-- Detailed view calendar -->
+		<script type="text/javascript">
+			$('#detailed_view_calendar').datepicker({
+				startDate: "<?php echo $first_date; ?>",
+				endDate: "<?php echo date('Y-m-d'); ?>",
+				format: "yyyy-mm-dd",
+				todayHighlight: true,
+				weekStart: 1
+			});
+			$("#detailed_view_calendar").datepicker("update", "<?php echo date('Y-m-d'); ?>");
+			
+			function detailed_view_change_date(date) {
+				// Start the loading animation
+				$('#loading_screen').fadeIn();
+				
+				// Start ajax request
+				$.get("ajax.php?operation=detailed_view&date="+date, function(data) {
+					// Parse data
+					var data = JSON.parse(data);
+
+					// Update uptime chart
+					detailed_view_uptime_chart.data.datasets[0].data = data.uptime;
+					detailed_view_uptime_chart.update();
+
+					// Update response times
+					$("#detailed_view_response_time_avg").text(data.response_avg);
+					$("#detailed_view_response_time_min").text(data.response_min);
+					$("#detailed_view_response_time_max").text(data.response_max);
+
+					// Update time chart
+					detailed_view_time_chart.data.labels = data.time_graph_labels;
+					detailed_view_time_chart.data.datasets[0].data = data.time_graph_data;
+					detailed_view_time_chart.data.datasets[0].reason = data.time_graph_reason;
+					detailed_view_time_chart.data.datasets[0].screenshot = data.time_graph_screenshot;
+					detailed_view_time_chart_update();
+
+					// Update date in all h2 titles
+					$(".detailed_view_selected_date").text(date);
+
+					// Update the datapicker
+					$("#detailed_view_calendar").datepicker("update", date);
+
+					// Stop the loading animation
+					$('#loading_screen').fadeOut();
+				});
+			}
+			
+			$('#detailed_view_calendar').datepicker().on("changeDate", function(e) {
+				function pad(str, max) {
+					str = str.toString();
+					return str.length < max ? pad("0" + str, max) : str;
+				}
+
+				var year  = e.date.getFullYear();
+				var month = pad(e.date.getMonth()+1, 2);
+				var day   = pad(e.date.getDate(), 2);
+				var date  = year + '-' + month + '-' + day;
+
+				detailed_view_change_date(date);
+			});
+		</script>
+
+		<!-- Detailed view uptime graph -->
+		<script type="text/javascript">
+			detailed_view_uptime_chart = new Chart(document.getElementById('detailed_view_uptime_canvas'), {
+				type: 'doughnut',
+				data: {
+					labels: ['UP', 'DOWN'],
+					datasets: [{
+						data: [<?php echo $detailed_view_uptime[0]; ?>, <?php echo $detailed_view_uptime[1]; ?>],
+						backgroundColor: [
+							'green',
+							'red'
+						]
+					}]
+				},
+				options: {
+					legend: {
+						display: false
+					},
+					tooltips: {
+						callbacks: {
+							label: (tooltipItems, data) => {
+								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' times checked';
+							}
+						}
+					}
+				},
+				plugins: [{
+					beforeDraw: function (chart) {
+						var width = chart.chart.width,
+							height = chart.chart.height,
+							ctx = chart.chart.ctx;
+
+						ctx.restore();
+						ctx.font = (height / 150).toFixed(2) + "em sans-serif";
+						ctx.textBaseline = "middle";
+
+						var text = Math.round(100/(chart.data.datasets[0].data[0]+chart.data.datasets[0].data[1])*chart.data.datasets[0].data[0])+"%",
+							textX = Math.round((width - ctx.measureText(text).width) / 2),
+							textY = height / 2 - (chart.titleBlock.height - 3);
+
+						ctx.fillText(text, textX, textY);
+						ctx.save();
+					}
+				}]
+			});
+		</script>
+
+		<!-- Detailed view time graph -->
+		<script type="text/javascript">
+			detailed_view_time_chart_pointBackgroundColors = [];
+
+			detailed_view_time_chart = new Chart(document.getElementById('detailed_view_time_canvas'), {
+				type: 'line',
+				data: {
+					labels: <?php echo json_encode(array_keys($detailed_view_time_array)); ?>,
+					datasets: [{
+						data: <?php echo json_encode(array_column($detailed_view_time_array, 'response_time')); ?>,
+						pointBackgroundColor: detailed_view_time_chart_pointBackgroundColors,
+						reason: <?php echo json_encode(array_column($detailed_view_time_array, 'reason')); ?>,
+						screenshot: <?php
+							$screenshot_array = [];
+							foreach( array_keys($detailed_view_time_array) as $label ) {
+								$label = str_replace(":", "-", $label);
+								$label = str_replace(" ", "_", $label);
+								$screenshot_filename = "screenshot/".date('Y-m-d')."_".$label.".jpg";
+								if( file_exists($screenshot_filename) ) {
+									array_push($screenshot_array, $screenshot_filename);
+								} else {
+									array_push($screenshot_array, "");
+								}
+							}
+							echo json_encode(array_values($screenshot_array));
+						?>
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Response time'
+							},
+							ticks: {
+								callback: function(value, index, values) {
+									return value + ' ms';
+								}
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Hour'
+							}
+						}]
+					},
+					tooltips: {
+						displayColors: false,
+						callbacks: {
+							label: (tooltipItems, data) => {
+								var value = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
+								var reason = data.datasets[tooltipItems.datasetIndex].reason[tooltipItems.index];
+								var screenshot = data.datasets[tooltipItems.datasetIndex].screenshot[tooltipItems.index];
+								if (value == 0) {
+									var result = ['DOWN'];
+									if (reason) {
+										result.push('Reason: '+reason);
+									}
+									if (screenshot) {
+										result.push('Screenshot available. Click to see!');
+									}
+									return result;
+								} else {
+									return value + ' ms';
+								}
+							}
+						}
+					}
+				}
+			});
+			
+			document.getElementById('detailed_view_time_canvas').onclick = function (evt) {
+				var clicked_points = detailed_view_time_chart.getElementAtEvent(evt);
+				if (clicked_points.length) {
+					window.open(detailed_view_time_chart.data.datasets[0].screenshot[clicked_points[0]._index], '_blank');
+				}
+			};
+
+			function detailed_view_time_chart_update() {
+				detailed_view_time_chart_pointBackgroundColors.length = 0;
+
+				for (i = 0; i < detailed_view_time_chart.data.datasets[0].data.length; i++) {
+					if (detailed_view_time_chart.data.datasets[0].data[i] == 0) {
+						detailed_view_time_chart_pointBackgroundColors.push("red");
+					} else {
+						detailed_view_time_chart_pointBackgroundColors.push("green");
+					}
+				}
+
+				detailed_view_time_chart.update();
+			}
+
+			detailed_view_time_chart_update();
+		</script>
+
+		<!-- Loading screen -->
+		<div class="fixed-top w-100 h-100" style="background-color:rgba(179, 179, 179, 0.7); display:none" id="loading_screen">
+			<div class="d-flex justify-content-center h-100">
+				<div class="spinner-border my-auto text-primary" role="status" style="height:50vh; width:50vh">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,91 @@
+version: "3.5"
+services:
+  php:
+      restart: always
+      build: './php/'
+      read_only: true
+      depends_on:
+          - mysql
+      volumes:
+          - ./public_html/:/var/www/html/:ro
+          # PAY ATTENTION: SOCK FOLDER NEEDS TO HAVE SETGID AND TO BE CHOWNED TO WWW-DATA GROUP. OTHER SETTINGS ARE NOT SECURE!
+          - ./sock/:/sock/:rw
+      sysctls:
+          net.core.somaxconn: 65536
+      logging:
+          driver: "json-file"
+          options:
+              max-file: "1"
+              max-size: "10m"
+      environment:
+          - TZ=Europe/Rome
+          # Replace here with your mysql credentials
+          - MYSQL_HOST=mysql
+          - MYSQL_DATABASE=unimia
+          - MYSQL_USER=mysql_user
+          - MYSQL_PASSWORD=mysql_password
+      # Feel free to enable the healthcheck if you want
+      #healthcheck:
+          # Replace here with your domain
+          #test: "curl --fail -s https://example.com"
+          #timeout: 30s
+          #interval: 5m
+          #retries: 2
+  cron:
+      restart: always
+      build: './cron/'
+      read_only: true
+      tmpfs:
+          - /tmp
+      depends_on:
+          - mysql
+      volumes:
+          - ./private/:/private/:rw
+          - ./public_html/screenshot/:/screenshot/:rw
+      logging:
+          driver: "json-file"
+          options:
+              max-file: "1"
+              max-size: "10m"
+      environment:
+          - TZ=Europe/Rome
+          # Replace here with your unimia credentials and login endpoint url
+          - USERNAME=name.surname@studenti.unimi.it
+          - PASSWORD=password
+          - CAS_URL=https://cas.unimi.it/login
+          # This is the timeout used by the python script which check if unimia is up or down
+          - TIMEOUT=65
+          # Replace here with your mysql credentials
+          - MYSQL_HOST=mysql
+          - MYSQL_DATABASE=unimia
+          - MYSQL_USER=mysql_user
+          - MYSQL_PASSWORD=mysql_password
+          # Replace here with a blacklist of words/phrases (case-insensitive and separed by commas) contained in Unimia which you want to be redacted before to take a screenshot
+          # (e.g. your name, surname, phone number, badge number ecc)
+          # Please note that this is just an additional security rule. Internally the software already redact personal informations based on their position on the page.
+          - WORD_BLACKLIST=john,doe,1234567890,123456,sicurezza dei sistemi e delle reti informatiche,l-31,f68,piazza del duomo,17,20121,milano,mi
+  mysql:
+      restart: always
+      image: mariadb
+      command: --default-authentication-plugin=mysql_native_password
+      environment:
+          - TZ=Europe/Rome
+          # Replace here with your mysql credentials
+          - MYSQL_ROOT_PASSWORD=mysql_root_password
+          - MYSQL_DATABASE=unimia
+          - MYSQL_USER=mysql_user
+          - MYSQL_PASSWORD=mysql_password
+      volumes:
+          - ./mysql/mysql/:/var/lib/mysql:rw
+          - ./mysql/config:/etc/mysql/conf.d:ro
+          - ./mysql/sql/:/docker-entrypoint-initdb.d/:ro
+      logging:
+          driver: "json-file"
+          options:
+              max-file: "1"
+              max-size: "10m"
+      healthcheck:
+          test: "mysqladmin status -u root -p$$MYSQL_ROOT_PASSWORD || exit 1"
+          timeout: 10s
+          interval: 1m30s
+          retries: 2

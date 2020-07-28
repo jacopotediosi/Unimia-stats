@@ -155,15 +155,38 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.standalone.min.css" integrity="sha512-p4vIrJ1mDmOVghNMM4YsWxm0ELMJ/T0IkdEvrkNHIcgFsSzDi/fV7YxzTzb3mnMvFPawuIyIrHcpxClauEfpQg==" crossorigin="anonymous">
 
 		<style type="text/css">
-			.datepicker, .table-condensed {
-				width: 300px;
-				height: 300px;
-			}
+			/* Navbar & scroll to anchor fix */
 			html {
 				scroll-padding-top: 56px;
 			}
 			body {
 				padding-top: 56px;
+			}
+			/* Datepicker */
+			.datepicker, .table-condensed {
+				width: 300px;
+				height: 300px;
+			}
+			/* Github corner */
+			.github-corner {
+				margin-top: 2px;
+			}
+			.github-corner:hover .octo-arm {
+				animation:octocat-wave 560ms ease-in-out
+			}
+			.github-corner svg {
+				fill:#343A40;
+				color:#fff;
+				border: 0;
+			}
+			@keyframes octocat-wave {
+				0%,100% {transform:rotate(0)}
+				20%,60% {transform:rotate(-25deg)}
+				40%,80% {transform:rotate(10deg)}
+			}
+			@media (max-width:500px) {
+				.github-corner:hover .octo-arm {animation:none}
+				.github-corner .octo-arm {animation:octocat-wave 560ms ease-in-out}
 			}
 		</style>
 	</head>
@@ -187,7 +210,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						</div>
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time (when up)</a>
+						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#response_time_summary">Summary</a>
 							<a class="dropdown-item" href="#response_time_last_n_months">In last 3 months</a>
@@ -203,6 +226,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							<a class="dropdown-item" href="#detailed_view_response_time">Response time on selected date</a>
 							<a class="dropdown-item" href="#detailed_view_time_graph">Data collected on selected date</a>
 						</div>
+					</li>
+					<li class="nav-item">
+						<a href="https://github.com/jacopotediosi/Unimia-stats" class="github-corner ml-sm-2 ml-0 d-block" aria-label="View source on GitHub" title="View source on GitHub" target="_blank">
+							<!-- SVG made from Tim Holman, https://tholman.com/github-corners/ -->
+							<svg width="35" height="35" viewBox="115 50 95 90" aria-hidden="true">
+								<path d="M155.618 127.341C139.174 132.47 134.779 121.995 134.779 121.995C131.422 115.261 127.317 113.775 127.317 113.775C121.425 110.528 127.419 110.075 127.419 110.075C133.45 110.044 137.196 115.537 137.196 115.537C143.415 124.149 151.658 121.015 155.096 118.94" fill="currentColor" style="transform-origin: 149px 121px;" class="octo-arm"/>
+								<path d="M146.84 143.77C146.84 143.912 150.517 142.215 150.517 140.659L150.588 121.072C151.153 117.113 152.709 114.426 154.477 112.941C141.042 111.385 126.97 106.223 126.9 83.101C126.97 76.525 129.304 71.08 133.193 66.908C132.486 65.352 130.435 59.2 133.759 50.927C133.759 50.927 138.779 49.301 150.376 57.079C155.113 55.736 160.275 55.099 165.437 55.029C170.528 55.029 175.761 55.736 180.569 57.15C192.095 49.301 197.186 50.857 197.186 50.857C200.439 59.2 198.388 65.352 197.752 66.837C201.641 71.151 203.974 76.454 203.974 83.101C203.974 106.294 189.832 111.385 176.397 112.941C178.518 114.779 180.498 118.456 180.498 124.113L180.428 140.588C180.428 142.286 184.67 143.983 184.741 143.77Z" fill="currentColor" class="octo-body"/>
+							</svg>
+						</a>
 					</li>
 				</ul>
 			</div>

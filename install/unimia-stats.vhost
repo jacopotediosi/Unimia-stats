@@ -1,0 +1,79 @@
+# NGINX virtualhost file for Unimia-stats, to be placed inside /etc/nginx/sites-available and to be linked to /etc/nginx/sites-enabled
+# Features:
+#	- ALL DYNAMIC PAGES ARE CACHED FOR N MINUTES
+#       - TLS, HSTS, NoFrame, NoSniff, XSS-Protection
+#	- Custom 404 page
+
+# Cache zone
+fastcgi_cache_path /etc/nginx/cache levels=1:2 keys_zone=UNIMIA:100m inactive=8m;
+fastcgi_cache_key "$scheme$request_method$host$request_uri";
+
+# Redirect HTTP (port 80) to HTTPS (port 443)
+server {
+	# Ports
+	listen 80;
+	listen [::]:80;
+	
+	# Server name (REPLACE HERE WITH YOUR DOMAIN)
+	server_name example.com;
+	
+	# Redirect
+	return 301 https://$server_name$request_uri;
+}
+
+# HTTPS (port 443)
+server {
+	# Ports
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
+
+	# Server name (REPLACE HERE WITH YOUR DOMAIN)
+	server_name example.com;
+
+	# Root for static contents (REPLACE HERE WITH YOUR PROJECT PATH)
+	root /path/to/docker/public_html;
+
+	# Indexes
+        index index.php;
+
+	# Custom error pages
+        error_page 404      /404.html;
+        error_page 403 =404 /404.html;   # 403 errors redirect to 404
+	location /404.html {internal;}
+
+	# Main location
+	location / {
+		try_files $uri $uri/ =404; # First attempt to serve request as file, then as directory, then fall back to displaying a 404
+	}
+
+	# TLS/SSL certificates (REPLACE HERE WITH YOUR CERTIFICATE PATH)
+	ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000;" always;
+
+	# Security headers
+	add_header X-XSS-Protection "1; mode=block";
+        add_header X-Frame-Options "DENY";
+        add_header X-Content-Type-Options nosniff;
+	fastcgi_hide_header X-Powered-By;
+
+	# Cache header
+	add_header X-Cache $upstream_cache_status;
+
+	# PHP-FPM connection
+	location ~ \.php$ {             
+		try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass unix:/path/to/docker/sock/app.sock; # REPLACE HERE WITH YOUR PROJECT PATH
+		# HERE WE FORCE /var/www/html INSTEAD OF $document_root BECAUSE WE NEED TO TELL TO PHP-FPM FILE'S PATH INSIDE DOCKER
+		fastcgi_param SCRIPT_FILENAME /var/www/html/$fastcgi_script_name;
+		fastcgi_index index.php;
+		fastcgi_cache UNIMIA;
+		fastcgi_cache_valid 200 8m;
+                include fastcgi_params;
+        }
+
+	# Deny access to .htaccess files, if Apache's document root concurs with nginx's one
+	location ~ /\.(?!well-known).* {deny all;}
+	location ~ /\.ht {deny all;}
+}

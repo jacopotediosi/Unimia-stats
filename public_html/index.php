@@ -3,8 +3,8 @@
 $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
 
 // N months
-$n_months_long_term  = 3; // Used when query/graph details day by day
-$n_months_short_term = 1; // Used when query/graph summarizes by hours/days of week
+$n_months_long_term  = (int) getenv('N_MONTHS_LONG_TERM');  // Used when query/graph details day by day
+$n_months_short_term = (int) getenv('N_MONTHS_SHORT_TERM'); // Used when query/graph summarizes by hours/days of week
 
 // First date
 $first_date   = $db->query("SELECT DATE(datetime) FROM stats ORDER BY datetime asc LIMIT 1")->fetch_row()[0];

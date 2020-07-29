@@ -100,7 +100,7 @@ db_conn.commit()
 
 # Close cursor and connection to DB
 db_cursor.close()
-db.conn.close()
+db_conn.close()
 
 # Define private and public path
 private_path    = "/private/"

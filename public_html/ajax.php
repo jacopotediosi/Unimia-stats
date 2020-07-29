@@ -31,7 +31,7 @@ if ( $_GET['operation']=='detailed_view' ) {
 		while ($row = mysqli_fetch_assoc($time_graph)) {
 			$time_graph_array[$row['time']] = [
 				'response_time' => (int) $row['response_time'],
-				'reason'        => $row['reason']
+				'reason'        => utf8_encode($row['reason'])
 			];
 		}
 

@@ -944,17 +944,17 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 									}
 									return result;
 								} else {
-									return value + ' ms';
+									return 'Response time: ' + value + ' ms';
 								}
 							}
 						}
 					}
 				}
 			});
-			
+
 			document.getElementById('detailed_view_time_canvas').onclick = function (evt) {
 				var clicked_points = detailed_view_time_chart.getElementAtEvent(evt);
-				if (clicked_points.length) {
+				if (clicked_points.length && detailed_view_time_chart.data.datasets[0].screenshot[clicked_points[0]._index]) {
 					window.open(detailed_view_time_chart.data.datasets[0].screenshot[clicked_points[0]._index], '_blank');
 				}
 			};

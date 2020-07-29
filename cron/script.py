@@ -14,14 +14,6 @@ from PIL import Image
 # Current date
 date_time   = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-# DB Connection
-db_conn	= mysql.connector.connect(
-  host      = os.getenv("MYSQL_HOST"),
-  user      = os.getenv("MYSQL_USER"),
-  password  = os.getenv("MYSQL_PASSWORD"),
-  database  = os.getenv("MYSQL_DATABASE")
-)
-
 # Create requests session
 s = requests.Session()
 
@@ -93,9 +85,22 @@ except Exception as e:
 		reason        = str(e)[0:255]
 		print(date_time + ": " + str(e))
 
+# DB Connection
+db_conn = mysql.connector.connect(
+  host      = os.getenv("MYSQL_HOST"),
+  user      = os.getenv("MYSQL_USER"),
+  password  = os.getenv("MYSQL_PASSWORD"),
+  database  = os.getenv("MYSQL_DATABASE")
+)
+
 # Insert data into DB
-db_conn.cursor().execute("INSERT INTO stats (datetime, is_up, response_time, reason) VALUES (%s, %s, %s, %s)", (date_time, is_up, response_time, reason))
+db_cursor = db_conn.cursor()
+db_cursor.execute("INSERT INTO stats (datetime, is_up, response_time, reason) VALUES (%s, %s, %s, %s)", (date_time, is_up, response_time, reason))
 db_conn.commit()
+
+# Close cursor and connection to DB
+db_cursor.close()
+db.conn.close()
 
 # Define private and public path
 private_path    = "/private/"

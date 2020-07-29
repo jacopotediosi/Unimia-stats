@@ -57,6 +57,8 @@ try:
 		raise Exception("Unimia status_code is " + str(unimia_request.status_code))
 	elif "sqlexception" in unimia_request_lower:
 		raise Exception('Page contains "sqlexception"')
+	elif "i servizi non sono momentaneamente disponibili" in unimia_request_lower:
+		raise Exception('Page contains "i servizi non sono momentaneamente disponibili"')
 	elif "matricola e' inesistente" in unimia_request_lower:
 		raise Exception('Page contains "matricola e\' inesistente"')
 	elif "errore di timeout" in unimia_request_lower:

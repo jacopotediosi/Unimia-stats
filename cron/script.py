@@ -152,7 +152,7 @@ if not is_up and which_request_to_save != 0:
 	# Redact elements
 	driver.execute_script("""
 		// AuthorizationTicket (visibile in case of errors)
-		document.body.innerHTML = document.body.innerHTML.replace(/ticket=.{46}/ig, 'ticket=REDACTED');
+		document.body.innerHTML = document.body.innerHTML.replace(/ticket=.{10,50}/ig, 'ticket=REDACTED');
 
 		// Welcome section ("Home: name surname")
 		try {

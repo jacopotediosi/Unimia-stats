@@ -65,8 +65,8 @@ try:
 		raise Exception('Page contains "errore di timeout"')
 	elif "si è verificato un errore" in unimia_request_lower:
 		raise Exception('Page contains "si è verificato un errore"')
-	elif "il server remoto ha restituito un codice di risposta HTTP non valido" in unimia_request_lower:
-		raise Exception('Page contains "il server remoto ha restituito un codice di risposta HTTP non valido"')
+	elif "il server remoto ha restituito un codice di risposta http non valido" in unimia_request_lower:
+		raise Exception('Page contains "il server remoto ha restituito un codice di risposta http non valido"')
 	elif "</strong>0" in unimia_request_lower or "</strong> 0" in unimia_request_lower:
 		raise Exception('Page contains "</strong> 0" (indicating 0 CFU)')
 	elif "error" in unimia_request_lower:

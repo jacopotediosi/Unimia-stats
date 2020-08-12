@@ -137,7 +137,7 @@ $detailed_view_time_array = [];
 while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 	$detailed_view_time_array[$row['time']] = [
 		'response_time' => $row['response_time'],
-		'reason'        => $row['reason']
+		'reason'        => utf8_encode($row['reason'])
 	];
 }
 ?>

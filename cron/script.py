@@ -153,6 +153,7 @@ if not is_up and which_request_to_save != 0:
 	driver.execute_script("""
 		// AuthorizationTicket (visibile in case of errors)
 		document.body.innerHTML = document.body.innerHTML.replace(/ticket=.{10,50}/ig, 'ticket=REDACTED');
+		document.body.innerHTML = document.body.innerHTML.replace(/ticket '.{10,50}'/ig, "Ticket 'REDACTED'");
 
 		// Welcome section ("Home: name surname")
 		try {

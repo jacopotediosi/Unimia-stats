@@ -7,7 +7,7 @@ if ( !isset($_GET['operation']) || !$_GET['operation'] )
 $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
 
 // Detailed view operation
-if ( $_GET['operation']=='detailed_view' ) {
+if ( $_GET['operation']==='detailed_view' ) {
 	// Check date parameter
 	if ( !isset($_GET['date']) || !preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/', $_GET['date']) ) {
 		// Date parameter is wrong

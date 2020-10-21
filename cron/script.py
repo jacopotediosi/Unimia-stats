@@ -143,71 +143,74 @@ if not is_up and which_request_to_save != 0:
 	options.add_argument('--disable-infobars')
 	options.add_argument('--disable-dev-shm-usage')
 	options.add_argument("--disable-gpu")
+	options.add_argument("--verbose")
 
 	# Open browser and load the saved page
 	driver = webdriver.Chrome(options=options)
-	driver.get("file://"+html_path+".html")
-	time.sleep(2)
+	try:
+		driver.get("file://"+html_path+".html")
+		time.sleep(2)
 
-	# Redact elements
-	driver.execute_script("""
-		// AuthorizationTicket (visibile in case of errors)
-		document.body.innerHTML = document.body.innerHTML.replace(/ticket=.{10,50}/ig, 'ticket=REDACTED');
-		document.body.innerHTML = document.body.innerHTML.replace(/ticket '.{10,50}'/ig, "Ticket 'REDACTED'");
+		# Redact elements
+		driver.execute_script("""
+			// AuthorizationTicket (visibile in case of errors)
+			document.body.innerHTML = document.body.innerHTML.replace(/ticket=.{10,50}/ig, 'ticket=REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/ticket '.{10,50}'/ig, "Ticket 'REDACTED'");
 
-		// Welcome section ("Home: name surname")
-		try {
-			document.getElementById("welcome").getElementsByTagName("*")[0].innerText="Home: REDACTED";
-		} catch (e) {}
+			// Welcome section ("Home: name surname")
+			try {
+				document.getElementById("welcome").getElementsByTagName("*")[0].innerText="Home: REDACTED";
+			} catch (e) {}
 
-		// "I tuoi dati" section
-		try {
-			i_tuoi_dati=document.getElementById("div_profilo").getElementsByTagName("li")
-			for (i = 0; i < i_tuoi_dati.length; i++) {
-				console.log(i_tuoi_dati[i]);
-				i_tuoi_dati[i].innerHTML = i_tuoi_dati[i].innerHTML.replace(/(<strong>.+<\/strong>).*/ig, '$1 REDACTED');
-			}
-		} catch (e) {}
-
-		// TODO: "Esami e opinioni degli studenti" section
-
-		// "Situazione amministrativa" section
-		try {
-			tasse = document.getElementById("lista-tasse").getElementsByTagName("td")
-			for (i = 0; i < tasse.length; i++) {
-				if ([2, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 17].includes(i)) {
-					tasse[i].innerText='REDACTED';
+			// "I tuoi dati" section
+			try {
+				i_tuoi_dati=document.getElementById("div_profilo").getElementsByTagName("li")
+				for (i = 0; i < i_tuoi_dati.length; i++) {
+					console.log(i_tuoi_dati[i]);
+					i_tuoi_dati[i].innerHTML = i_tuoi_dati[i].innerHTML.replace(/(<strong>.+<\/strong>).*/ig, '$1 REDACTED');
 				}
-			}
-		} catch (e) {}
+			} catch (e) {}
 
-		// "I tuoi siti didattici" sidebar
-		try {
-			document.getElementById("div_siti_aperto").innerText="REDACTED";
-		} catch (e) {}
+			// TODO: "Esami e opinioni degli studenti" section
 
-		// "CFU / Carriera" section
-		document.body.innerHTML = document.body.innerHTML.replace(/Dettaglio carriera ?- ?<\/strong>.+<\/p>/ig, 'Dettaglio carriera - </strong>REDACTED</p>');
-		document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\):<\/strong> ?[1-9]+/ig, 'Esami registrati (in piano):</strong> REDACTED');
-		document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\):<\/strong> ?[1-9]+/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
-		document.body.innerHTML = document.body.innerHTML.replace(/CFU totali \(esami e altre attività in piano e fuori piano\):<\/strong> ?[1-9\.0-9]+/ig, 'CFU totali (esami e altre attività in piano e fuori piano):</strong> REDACTED');
-	""")
-	blacklist = os.getenv("WORD_BLACKLIST").split(',')
-	for b in blacklist:
-		driver.execute_script("document.body.innerHTML = document.body.innerHTML.replace(new RegExp('"+b.replace("'", "\\'")+"', 'ig'), 'REDACTED');")
-	time.sleep(2)
+			// "Situazione amministrativa" section
+			try {
+				tasse = document.getElementById("lista-tasse").getElementsByTagName("td")
+				for (i = 0; i < tasse.length; i++) {
+					if ([2, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 17].includes(i)) {
+						tasse[i].innerText='REDACTED';
+					}
+				}
+			} catch (e) {}
 
-	# Set the page size
-	width  = driver.execute_script('return document.body.parentNode.scrollWidth') + 20
-	height = driver.execute_script('return document.body.parentNode.scrollHeight') + 20
-	driver.set_window_size(width, height)
-	time.sleep(2)
+			// "I tuoi siti didattici" sidebar
+			try {
+				document.getElementById("div_siti_aperto").innerText="REDACTED";
+			} catch (e) {}
 
-	# Save a PNG screenshot of the page
-	driver.save_screenshot(screenshot_path+".png")
+			// "CFU / Carriera" section
+			document.body.innerHTML = document.body.innerHTML.replace(/Dettaglio carriera ?- ?<\/strong>.+<\/p>/ig, 'Dettaglio carriera - </strong>REDACTED</p>');
+			document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\):<\/strong> ?[1-9]+/ig, 'Esami registrati (in piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\):<\/strong> ?[1-9]+/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/CFU totali \(esami e altre attività in piano e fuori piano\):<\/strong> ?[1-9\.0-9]+/ig, 'CFU totali (esami e altre attività in piano e fuori piano):</strong> REDACTED');
+		""")
+		blacklist = os.getenv("WORD_BLACKLIST").split(',')
+		for b in blacklist:
+			driver.execute_script("document.body.innerHTML = document.body.innerHTML.replace(new RegExp('"+b.replace("'", "\\'")+"', 'ig'), 'REDACTED');")
+		time.sleep(2)
 
-	# Close the browser
-	driver.quit()
+		# Set the page size
+		width  = driver.execute_script('return document.body.parentNode.scrollWidth') + 20
+		height = driver.execute_script('return document.body.parentNode.scrollHeight') + 20
+		driver.set_window_size(width, height)
+		time.sleep(2)
+
+		# Save a PNG screenshot of the page
+		driver.save_screenshot(screenshot_path+".png")
+
+	finally:
+		# Close the browser
+		driver.quit()
 
 	# Convert saved PNG to JPG (and reduce its size to 2/3 to save space)
 	original_image = Image.open(screenshot_path+".png")

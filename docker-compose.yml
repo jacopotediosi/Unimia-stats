@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.7"
 services:
   php:
       restart: always
@@ -39,6 +39,8 @@ services:
       restart: always
       build: './cron/'
       read_only: true
+      init: true
+      tty: true
       tmpfs:
           - /tmp
       depends_on:

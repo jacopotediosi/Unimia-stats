@@ -189,6 +189,24 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				.github-corner .octo-arm {animation:octocat-wave 560ms ease-in-out}
 			}
 		</style>
+
+<?php
+	$gtag_id = getenv('GTAG_ID');
+	if ($gtag_id) {
+		echo <<<EOL
+				<!-- Global site tag (gtag.js) - Google Analytics -->
+				<script async src="https://www.googletagmanager.com/gtag/js?id=$gtag_id"></script>
+				<script>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag('js', new Date());
+					gtag('config', '$gtag_id');
+				</script>
+				<script type="text/javascript" charset="UTF-8" src="//cdn.cookie-script.com/s/fa5c2a49f4aa070719c30eb57383ee68.js"></script>
+		EOL;
+	}
+?>
+
 	</head>
 
 	<body>

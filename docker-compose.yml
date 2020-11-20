@@ -28,6 +28,8 @@ services:
           - N_MONTHS_LONG_TERM=3
           # Used when query/graph summarizes by hours/days of week
           - N_MONTHS_SHORT_TERM=1
+          # Google Tag ID (empty if not used)
+          - GTAG_ID=
       # Feel free to enable the healthcheck if you want
       #healthcheck:
           # Replace here with your domain

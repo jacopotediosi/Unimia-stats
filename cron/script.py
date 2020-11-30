@@ -2,6 +2,7 @@
 
 # Imports
 import os
+import re
 import time
 import requests
 import mysql.connector
@@ -78,13 +79,13 @@ try:
 	elif "dettaglio pagamenti" not in unimia_request_lower:
 		raise Exception('Page doesn\'t contain "dettaglio pagamenti"')
 	else:
-		is_up            = True
+		is_up         = True
 		response_time = round(unimia_request.elapsed.total_seconds()*1000)
 		reason        = ''
 except Exception as e:
-		is_up            = False
+		is_up         = False
 		response_time = 0
-		reason        = str(e)[0:255]
+		reason        = re.sub(r"ticket=.{10,50} ", "ticket=REDACTED ", str(e)[0:255], flags=re.IGNORECASE) # Redact CAS ticket in Exception
 		print(date_time + ": " + str(e))
 
 # DB Connection

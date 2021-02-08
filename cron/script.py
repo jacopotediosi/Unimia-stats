@@ -58,6 +58,8 @@ try:
 		raise Exception("Unimia status_code is " + str(unimia_request.status_code))
 	elif "sqlexception" in unimia_request_lower:
 		raise Exception('Page contains "sqlexception"')
+	elif "outofmemoryerror" in unimia_request_lower:
+		raise Exception('Page contains "outofmemoryerror"')
 	elif "i servizi non sono momentaneamente disponibili" in unimia_request_lower:
 		raise Exception('Page contains "i servizi non sono momentaneamente disponibili"')
 	elif "matricola e' inesistente" in unimia_request_lower:
@@ -68,6 +70,10 @@ try:
 		raise Exception('Page contains "si è verificato un errore"')
 	elif "il server remoto ha restituito un codice di risposta http non valido" in unimia_request_lower:
 		raise Exception('Page contains "il server remoto ha restituito un codice di risposta http non valido"')
+	elif "error 500" in unimia_request_lower:
+		raise Exception('Page contains "error 500"')
+	elif "http error" in unimia_request_lower:
+		raise Exception('Page contains "http error"')
 	elif "</strong>0" in unimia_request_lower or "</strong> 0" in unimia_request_lower:
 		raise Exception('Page contains "</strong> 0" (indicating 0 CFU)')
 	elif "error" in unimia_request_lower:

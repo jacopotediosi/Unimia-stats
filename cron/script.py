@@ -197,9 +197,9 @@ if not is_up and which_request_to_save != 0:
 
 			// "CFU / Carriera" section
 			document.body.innerHTML = document.body.innerHTML.replace(/Dettaglio carriera ?- ?<\/strong>.+<\/p>/ig, 'Dettaglio carriera - </strong>REDACTED</p>');
-			document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\):<\/strong> ?[1-9]+/ig, 'Esami registrati (in piano):</strong> REDACTED');
-			document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\):<\/strong> ?[1-9]+/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
-			document.body.innerHTML = document.body.innerHTML.replace(/CFU totali \(esami e altre attività in piano e fuori piano\):<\/strong> ?[1-9\.0-9]+/ig, 'CFU totali (esami e altre attività in piano e fuori piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\):<\/strong> ?(\d*)(\.\d+)?/ig, 'Esami registrati (in piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\):<\/strong> ?(\d*)(\.\d+)?/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/CFU totali \(esami e altre attività in piano e fuori piano\):<\/strong> ?(\d*)(\.\d+)?/ig, 'CFU totali (esami e altre attività in piano e fuori piano):</strong> REDACTED');
 		""")
 		blacklist = os.getenv("WORD_BLACKLIST").split(',')
 		for b in blacklist:

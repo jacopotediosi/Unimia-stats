@@ -1,7 +1,18 @@
 <?php
+header("Content-Type: application/json");
+
+function api_error_die($http_status_code, $error_message) {
+	http_response_code($http_status_code);
+	die( json_encode(["error" => ["code"=>$http_status_code, "message"=>$error_message]]) );
+}
+
+function api_success_die($data) {
+	die( json_encode(["data" => $data]) );
+}
+
 // Die if no operation is specified
 if ( !isset($_GET['operation']) || !$_GET['operation'] )
-	die('Error: no operation specified');
+	api_error_die(400, "Missing or empty 'operation' parameter");
 
 // DB Connection
 $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
@@ -11,7 +22,7 @@ if ( $_GET['operation']==='detailed_view' ) {
 	// Check date parameter
 	if ( !isset($_GET['date']) || !preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/', $_GET['date']) ) {
 		// Date parameter is wrong
-		die('Error: wrong date format');
+		api_error_die(400, "Missing date parameter or wrong date format");
 	} else {
 		// Date parameter is ok, let's escape it
 		$date = $db->real_escape_string($_GET['date']);
@@ -50,9 +61,9 @@ if ( $_GET['operation']==='detailed_view' ) {
 
 		// Output
 		$output = array('uptime' => $uptime, 'response_avg' => $response_avg, 'response_min' => $response_min, 'response_max' => $response_max, 'time_graph_labels' => array_keys($time_graph_array), 'time_graph_data' => array_column($time_graph_array, 'response_time'), 'time_graph_reason' => array_column($time_graph_array, 'reason'), 'time_graph_screenshot' => array_values($time_graph_screenshot));
-		die(json_encode($output));
+		api_success_die($output);
 	}
 }
 
 // Wrong operation specified
-die('Error: wrong operation specified');
+api_error_die(400, "Unknown operation specified");

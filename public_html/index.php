@@ -794,15 +794,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				weekStart: 1
 			});
 			$("#detailed_view_calendar").datepicker("update", "<?php echo date('Y-m-d'); ?>");
-			
+
 			function detailed_view_change_date(date) {
 				// Start the loading animation
 				$('#loading_screen').fadeIn();
-				
+
 				// Start ajax request
 				$.get("ajax.php?operation=detailed_view&date="+date, function(data) {
 					// Parse data
-					var data = JSON.parse(data);
+					var data = data["data"];
 
 					// Update uptime chart
 					detailed_view_uptime_chart.data.datasets[0].data = data.uptime;

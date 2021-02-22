@@ -451,7 +451,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						},
 						tooltips: {
 							callbacks: {
-								label: (tooltipItems, data) => {
+								label: function(tooltipItems, data) {
 									return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' times checked';
 								}
 							}
@@ -517,7 +517,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return [
 									'Uptime: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%',
 									'Click to see this date details'
@@ -577,7 +577,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%';
 							}
 						}
@@ -624,7 +624,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%';
 							}
 						}
@@ -670,7 +670,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return [
 									'Response time: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms',
 									'Click to see this date details'
@@ -729,7 +729,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms';
 							}
 						}
@@ -775,7 +775,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms';
 							}
 						}
@@ -866,7 +866,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					},
 					tooltips: {
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' times checked';
 							}
 						}
@@ -948,7 +948,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					tooltips: {
 						displayColors: false,
 						callbacks: {
-							label: (tooltipItems, data) => {
+							label: function(tooltipItems, data) {
 								var value = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
 								var reason = data.datasets[tooltipItems.datasetIndex].reason[tooltipItems.index];
 								var screenshot = data.datasets[tooltipItems.datasetIndex].screenshot[tooltipItems.index];

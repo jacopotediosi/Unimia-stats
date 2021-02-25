@@ -511,9 +511,20 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							}
 						}],
 						xAxes: [{
+							type: 'time',
+							time: {
+								parser: 'YYYY-MM-DD',
+								unit: 'day',
+								displayFormats: {
+									day: 'YYYY-MM-DD'
+								}
+							},
 							scaleLabel: {
 								display: true,
 								labelString: 'Date'
+							},
+							ticks: {
+								min: '<?php echo max(date('Y-m-d', strtotime("-2 months")), $first_date); ?>' // Start zoomed in to show the last 2 months
 							}
 						}]
 					},
@@ -525,6 +536,18 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 									'Uptime: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%',
 									'Click to see this date details'
 								];
+							}
+						}
+					},
+					plugins: {
+						zoom: {
+							pan: {
+								enabled: true,
+								mode: 'x'
+							},
+							zoom: {
+								enabled: true,
+								mode: 'x',
 							}
 						}
 					}
@@ -664,9 +687,20 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							}
 						}],
 						xAxes: [{
+							type: 'time',
+							time: {
+								parser: 'YYYY-MM-DD',
+								unit: 'day',
+								displayFormats: {
+									day: 'YYYY-MM-DD'
+								}
+							},
 							scaleLabel: {
 								display: true,
 								labelString: 'Date'
+							},
+							ticks: {
+								min: '<?php echo max(date('Y-m-d', strtotime("-2 months")), $first_date); ?>' // Start zoomed in to show the last 2 months
 							}
 						}]
 					},
@@ -678,6 +712,18 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 									'Response time: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms',
 									'Click to see this date details'
 								];
+							}
+						}
+					},
+					plugins: {
+						zoom: {
+							pan: {
+								enabled: true,
+								mode: 'x'
+							},
+							zoom: {
+								enabled: true,
+								mode: 'x',
 							}
 						}
 					}

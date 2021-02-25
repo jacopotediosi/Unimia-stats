@@ -285,7 +285,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- In last n months -->
-			<h2 id="uptime_last_n_months" class="mt-3 mb-4 mb-md-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<h2 id="uptime_last_n_months" class="mt-4 mb-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
 				<canvas id="uptime_last_n_months_canvas"></canvas>
@@ -313,7 +313,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h1 class="mt-5 mb-4 mb-sm-5 display-4">Average response time (when up)*</h1>
 
 			<!-- Summary -->
-			<h2 id="response_time_summary" class="mt-3 mb-4 mb-md-3 text-center">Summary</h2>
+			<h2 id="response_time_summary" class="mt-4 mb-3 text-center">Summary</h2>
 			<div class="row text-center my-5">
 				<div class="col-lg-3 col-sm-6 mb-5 mb-lg-2">
 					<h3><?php echo $response_time_today; ?> ms</h3>
@@ -334,7 +334,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- In last n months -->
-			<h2 id="response_time_last_n_months" class="mt-3 mb-4 mb-md-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<h2 id="response_time_last_n_months" class="mt-4 mb-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
 				<canvas id="response_time_last_n_months_canvas"></canvas>
@@ -343,14 +343,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<div class="row text-center">
 				<!-- During week -->
 				<div class="col-lg-6">
-					<h2 id="response_time_during_week" class="mt-3 mb-4 mb-md-3">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+					<h2 id="response_time_during_week" class="mt-4 mb-3">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
 					<div style="height: 300px">
 						<canvas id="response_time_during_week_canvas"></canvas>
 					</div>
 				</div>
 				<!-- During day -->
 				<div class="col-lg-6">
-					<h2 id="response_time_during_day" class="mt-3 mb-4 mb-md-3">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+					<h2 id="response_time_during_day" class="mt-4 mb-3">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
 					<div style="height: 300px">
 						<canvas id="response_time_during_day_canvas"></canvas>
 					</div>

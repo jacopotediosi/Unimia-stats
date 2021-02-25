@@ -988,6 +988,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							}
 						}],
 						xAxes: [{
+							type: 'time',
+							time: {
+								parser: 'HH:mm:ss',
+								unit: 'hour',
+								displayFormats: {
+									hour: 'HH:mm:ss'
+								}
+							},
 							scaleLabel: {
 								display: true,
 								labelString: 'Hour'
@@ -1013,6 +1021,18 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 								} else {
 									return ['UP', 'Response time: ' + value + ' ms'];
 								}
+							}
+						}
+					},
+					plugins: {
+						zoom: {
+							pan: {
+								enabled: true,
+								mode: 'x'
+							},
+							zoom: {
+								enabled: true,
+								mode: 'x',
 							}
 						}
 					}

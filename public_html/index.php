@@ -222,18 +222,18 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Uptime</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#uptime_summary">Summary</a>
-							<a class="dropdown-item" href="#uptime_last_n_months">In last 3 months</a>
-							<a class="dropdown-item" href="#uptime_during_week">During week (last 1 month)</a>
-							<a class="dropdown-item" href="#uptime_during_day">During day (last 1 month)</a>
+							<a class="dropdown-item" href="#uptime_last_n_months">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
+							<a class="dropdown-item" href="#uptime_during_week">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
+							<a class="dropdown-item" href="#uptime_during_day">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a> <!-- TODO -->
 						</div>
 					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#response_time_summary">Summary</a>
-							<a class="dropdown-item" href="#response_time_last_n_months">In last 3 months</a>
-							<a class="dropdown-item" href="#response_time_during_week">During week (last 1 month)</a>
-							<a class="dropdown-item" href="#response_time_during_day">During day (last 1 month)</a>
+							<a class="dropdown-item" href="#response_time_last_n_months">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
+							<a class="dropdown-item" href="#response_time_during_week">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
+							<a class="dropdown-item" href="#response_time_during_day">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">

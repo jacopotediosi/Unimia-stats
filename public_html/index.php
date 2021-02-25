@@ -1011,7 +1011,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 									}
 									return result;
 								} else {
-									return 'Response time: ' + value + ' ms';
+									return ['UP', 'Response time: ' + value + ' ms'];
 								}
 							}
 						}

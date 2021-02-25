@@ -222,16 +222,16 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Uptime</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#uptime_summary">Summary</a>
-							<a class="dropdown-item" href="#uptime_last_n_months">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
 							<a class="dropdown-item" href="#uptime_during_week">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
 							<a class="dropdown-item" href="#uptime_during_day">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a> <!-- TODO -->
+							<a class="dropdown-item" href="#uptime_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#response_time_summary">Summary</a>
-							<a class="dropdown-item" href="#response_time_last_n_months">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
+							<a class="dropdown-item" href="#response_time_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
 							<a class="dropdown-item" href="#response_time_during_week">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
 							<a class="dropdown-item" href="#response_time_during_day">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
 						</div>
@@ -285,7 +285,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- In last n months -->
-			<h2 id="uptime_last_n_months" class="mt-4 mb-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<h2 id="uptime_last_n_months" class="mt-4 mb-3 text-center">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
 				<canvas id="uptime_last_n_months_canvas"></canvas>
@@ -334,7 +334,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- In last n months -->
-			<h2 id="response_time_last_n_months" class="mt-4 mb-3 text-center">In last <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<h2 id="response_time_last_n_months" class="mt-4 mb-3 text-center">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
 				<canvas id="response_time_last_n_months_canvas"></canvas>

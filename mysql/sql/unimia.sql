@@ -16,9 +16,12 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `is_up` tinyint(1) NOT NULL,
   `response_time` mediumint(9) NOT NULL DEFAULT '0',
   `reason` varchar(255) NOT NULL DEFAULT '',
+  `hour_datetime` tinyint(4) GENERATED ALWAYS AS (hour(`datetime`)) VIRTUAL,
   PRIMARY KEY (`datetime`),
-  KEY `elapsed_time` (`response_time`),
-  KEY `is_up` (`is_up`)
+  KEY `response_time` (`response_time`),
+  KEY `is_up` (`is_up`),
+  KEY `hour_datetime` (`hour_datetime`),
+  KEY `is_up_hour_datetime` (`is_up`,`hour_datetime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 COMMIT;
 

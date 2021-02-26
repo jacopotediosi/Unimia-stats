@@ -25,7 +25,7 @@ services:
           - MYSQL_USER=mysql_user
           - MYSQL_PASSWORD=mysql_password
           # Used when query/graph details day by day
-          - N_MONTHS_LONG_TERM=3
+          - N_MONTHS_LONG_TERM=6
           # Used when query/graph summarizes by hours/days of week
           - N_MONTHS_SHORT_TERM=1
           # Google Tag ID (empty if not used)

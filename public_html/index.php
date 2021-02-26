@@ -37,46 +37,24 @@ while ($row = mysqli_fetch_assoc($uptime_last_n_months)) {
 	$uptime_last_n_months_array[$row['date']] = $row['uptime_percentage'];
 }
 
-// Uptime time during week
-$uptime_during_week = $db->query("
-SELECT t1.dayname,
+// Uptime heatmap
+$uptime_heatmap_array = [];
+$uptime_heatmap = $db->query("
+SELECT t1.dayname, t1.hour, 
 100/(
 	SELECT COUNT(*) FROM stats t2
-	WHERE dayname(t2.datetime)=t1.dayname AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
 )*(
-	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
 ) as uptime_percentage
 FROM (
-	SELECT DISTINCT dayname(datetime) as dayname
+	SELECT DISTINCT dayname(datetime) as dayname, hour(datetime) as hour
 	FROM stats
 	WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH
 ) t1
-ORDER BY FIELD(dayname , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday', 'Sunday')
 ");
-$uptime_during_week_array = [];
-while ($row = mysqli_fetch_assoc($uptime_during_week)) {
-	$uptime_during_week_array[$row['dayname']] = $row['uptime_percentage'];
-}
-
-// Uptime during day
-$uptime_during_day = $db->query("
-SELECT t1.hour,
-100/(
-	SELECT COUNT(*) FROM stats t2
-	WHERE hour(t2.datetime)=t1.hour AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
-)*(
-	SELECT COUNT(*) FROM stats t2 WHERE hour(t2.datetime)=t1.hour AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
-) as uptime_percentage
-FROM (
-	SELECT DISTINCT hour(datetime) as hour
-	FROM stats
-	WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH
-) t1
-ORDER BY hour ASC
-");
-$uptime_during_day_array = [];
-while ($row = mysqli_fetch_assoc($uptime_during_day)) {
-	$uptime_during_day_array[$row['hour']] = $row['uptime_percentage'];
+while ($row = mysqli_fetch_assoc($uptime_heatmap)) {
+	$uptime_heatmap_array[$row['dayname']][$row['hour']] = (double) $row['uptime_percentage'];
 }
 
 // Response time summary
@@ -222,9 +200,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Uptime</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#uptime_summary">Summary</a>
-							<a class="dropdown-item" href="#uptime_during_week">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
-							<a class="dropdown-item" href="#uptime_during_day">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a> <!-- TODO -->
 							<a class="dropdown-item" href="#uptime_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
+							<a class="dropdown-item" href="#uptime_heatmap">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
@@ -291,22 +268,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				<canvas id="uptime_last_n_months_canvas"></canvas>
 			</div>
 			
-
-			<div class="row text-center">
-				<!-- During week -->
-				<div class="col-lg-6">
-					<h2 id="uptime_during_week" class="mt-3 mb-4 mb-md-3">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
-					<div style="height: 300px">
-						<canvas id="uptime_during_week_canvas"></canvas>
-					</div>
-				</div>
-				<!-- During day -->
-				<div class="col-lg-6">
-					<h2 id="uptime_during_day" class="mt-3 mb-4 mb-md-3">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
-					<div style="height: 300px">
-						<canvas id="uptime_during_day_canvas"></canvas>
-					</div>
-				</div>
+			<!-- Heatmap -->
+			<h2 id="uptime_heatmap" class="mt-4 mb-3 text-center">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+			<div style="height: 300px">
+				<canvas id="uptime_heatmap_canvas"></canvas>
 			</div>
 
 			<!-- AVERAGE RESPONSE TIME -->
@@ -424,6 +389,17 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<!-- Chart.js Zoom Plugin and its dependencies -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.7.7/chartjs-plugin-zoom.min.js" integrity="sha512-8E9fPF4pjWxI0dpprpn4WYeciAMo2kh6xN0COFxvTfurMttjZzih/sBp+Fxu49Zr6IUSp4sqWY6KLecnqOCwxA==" crossorigin="anonymous"></script>
+		<!-- Chart.js Matrix Plugin -->
+		<script src="/js/chartjs-chart-matrix.min.js"></script>
+
+		<!-- Week starts with Monday in all charts -->
+		<script type="text/javascript">
+			moment.updateLocale('en', {
+				week: {
+					dow : 1
+				}
+			});
+		</script>
 
 		<!-- Uptime pie charts -->
 		<script type="text/javascript">
@@ -565,95 +541,126 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			};
 		</script>
 
-		<!-- Uptime during week graph -->
+		<!-- Uptime heatmap -->
 		<script type="text/javascript">
-			new Chart(document.getElementById('uptime_during_week_canvas'), {
-				type: 'bar',
-				data: {
-					labels: <?php echo json_encode(array_keys($uptime_during_week_array)); ?>,
-					datasets: [{
-						data: <?php echo json_encode(array_values($uptime_during_week_array)); ?>
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
+			// Heatmap array
+			uptime_heatmap_array = <?php echo json_encode($uptime_heatmap_array); ?>;
+
+			// Define the colors of the datasets and their range of values
+			uptime_heatmap_legend = [
+				{color:"#c70000", hover_color:"#b30000", min:00, max:25,  label: "<=25% uptime"},  // Red
+				{color:"#e87d00", hover_color:"#cc6d00", min:26, max:50,  label: "26-50% uptime"}, // Orange
+				{color:"#f0ca0f", hover_color:"#d8b60e", min:51, max:70,  label: "51-70% uptime"}, // Yellow
+				{color:"#8fda3e", hover_color:"#75c125", min:71, max:80,  label: "71-80% uptime"}, // Light green
+				{color:"#00b300", hover_color:"#009900", min:81, max:90,  label: "81-90% uptime"}, // Green
+				{color:"#008000", hover_color:"#006600", min:91, max:100, label: ">90% uptime"}    // Dark green
+			];
+			
+			// Inizialize datasets
+			uptime_heatmap_datasets = [];
+			for(i in uptime_heatmap_legend) {
+				uptime_heatmap_datasets.push({
+					data: [],
+					label: uptime_heatmap_legend[i].label,
+					backgroundColor: uptime_heatmap_legend[i].color,
+					hoverBackgroundColor: uptime_heatmap_legend[i].hover_color,
+					width(c) {
+						const a = c.chart.chartArea || {};
+						return (a.right - a.left) / 24 - 1;
 					},
-					scales: {
-						yAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Uptime'
-							},
-							ticks: {
-								max: 100,
-								callback: function(value, index, values) {
-									return value + '%';
-								}
-							}
-						}],
-						xAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Day'
-							}
-						}]
-					},
-					tooltips: {
-						displayColors: false,
-						callbacks: {
-							label: function(tooltipItems, data) {
-								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%';
-							}
+					height(c) {
+						const a = c.chart.chartArea || {};
+						return (a.bottom - a.top) / 7 - 1;
+					}
+				});
+			}
+
+			// Fill datasets with actual data
+			for(day in uptime_heatmap_array) {
+				for(hour in uptime_heatmap_array[day]) {
+					// Get the uptime_value
+					var uptime_value = uptime_heatmap_array[day][hour];
+					// Select the right color from the legend
+					for(legend in uptime_heatmap_legend) {
+						if(Math.round(uptime_value)>=uptime_heatmap_legend[legend].min && Math.round(uptime_value)<=uptime_heatmap_legend[legend].max) {
+							// Add to the right dataset
+							uptime_heatmap_datasets[legend].data.push({x:hour, y:day, v:uptime_value});
+							break;
 						}
 					}
 				}
-			});
-		</script>
-
-		<!-- Uptime during day graph -->
-		<script type="text/javascript">
-			new Chart(document.getElementById('uptime_during_day_canvas'), {
-				type: 'line',
+			}
+			
+			uptime_heatmap_chart = new Chart(document.getElementById('uptime_heatmap_canvas'), {
+				type: 'matrix',
 				data: {
-					labels: <?php echo json_encode(array_keys($uptime_during_day_array)); ?>,
-					datasets: [{
-						data: <?php echo json_encode(array_values($uptime_during_day_array)); ?>
-					}]
+					datasets: uptime_heatmap_datasets
 				},
 				options: {
 					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Uptime'
-							},
-							ticks: {
-								max: 100,
-								callback: function(value, index, values) {
-									return value + '%';
-								}
-							}
-						}],
-						xAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Hour'
-							}
-						}]
-					},
 					tooltips: {
 						displayColors: false,
 						callbacks: {
+							title: function(tooltipItems, data) {
+								var hovered_item = data.datasets[tooltipItems[0].datasetIndex].data[tooltipItems[0].index];
+								return hovered_item.y + ' between ' + ("0"+hovered_item.x).slice(-2) + ':00 and '+ (("0"+(parseInt(hovered_item.x)+1)).slice(-2)) + ':00';
+							},
 							label: function(tooltipItems, data) {
-								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%';
+								var hovered_item = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
+								return 'Uptime: ' + hovered_item.v + '%';
 							}
 						}
+					},
+					scales: {
+						xAxes: [{
+							type: 'time',
+							offset: true,
+							time: {
+								parser: 'HH',
+								unit: 'hour',
+								displayFormats: {
+									hour: 'HH'
+								}
+							},
+							ticks: {
+								padding: 10
+							},
+							gridLines: {
+								display: false,
+								drawBorder: false,
+								tickMarkLength: 0,
+							},
+							scaleLabel: {
+								display: true,
+								labelString: 'Daytime'
+							}
+						}],
+						yAxes: [{
+							type: 'time',
+							offset: true,
+							time: {
+								unit: 'day',
+								parser: 'dddd',
+								displayFormats: {
+									day: 'ddd'
+								},
+								isoWeekday: 4
+							},
+							position: 'left',
+							ticks: {
+								reverse: true,
+								padding: 10
+							},
+							gridLines: {
+								display: false,
+								drawBorder: false,
+								tickMarkLength: 0
+							},
+							scaleLabel: {
+								display: true,
+								labelString: 'Weekday'
+							}
+						}]
 					}
 				}
 			});

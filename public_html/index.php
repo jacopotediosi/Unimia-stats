@@ -34,7 +34,7 @@ ORDER BY date ASC
 ");
 $uptime_last_n_months_array = [];
 while ($row = mysqli_fetch_assoc($uptime_last_n_months)) {
-	$uptime_last_n_months_array[$row['date']] = $row['uptime_percentage'];
+	$uptime_last_n_months_array[$row['date']] = (double) $row['uptime_percentage'];
 }
 
 // Uptime heatmap
@@ -73,7 +73,7 @@ ORDER BY date ASC
 ");
 $response_time_last_n_months_array = [];
 while ($row = mysqli_fetch_assoc($response_time_last_n_months)) {
-	$response_time_last_n_months_array[$row['date']] = $row['avg'];
+	$response_time_last_n_months_array[$row['date']] = (double) $row['avg'];
 }
 
 // Response time during week
@@ -86,7 +86,7 @@ ORDER BY FIELD(dayname , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
 ");
 $response_time_during_week_array = [];
 while ($row = mysqli_fetch_assoc($response_time_during_week)) {
-	$response_time_during_week_array[$row['dayname']] = $row['avg'];
+	$response_time_during_week_array[$row['dayname']] = (double) $row['avg'];
 }
 
 // Response time during day
@@ -98,7 +98,7 @@ ORDER BY hour ASC
 ");
 $response_time_during_day_array = [];
 while ($row = mysqli_fetch_assoc($response_time_during_day)) {
-	$response_time_during_day_array[$row['hour']] = $row['avg'];
+	$response_time_during_day_array[$row['hour']] = (double) $row['avg'];
 }
 
 // Detailed view uptime
@@ -114,7 +114,7 @@ $detailed_view_time = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') as ti
 $detailed_view_time_array = [];
 while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 	$detailed_view_time_array[$row['time']] = [
-		'response_time' => $row['response_time'],
+		'response_time' => (int) $row['response_time'],
 		'reason'        => utf8_encode($row['reason'])
 	];
 }

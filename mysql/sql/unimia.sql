@@ -17,11 +17,14 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `response_time` mediumint(9) NOT NULL DEFAULT '0',
   `reason` varchar(255) NOT NULL DEFAULT '',
   `hour_datetime` tinyint(4) GENERATED ALWAYS AS (hour(`datetime`)) VIRTUAL,
+  `date_datetime` date GENERATED ALWAYS AS (cast(`datetime` as date)) VIRTUAL,
   PRIMARY KEY (`datetime`),
-  KEY `response_time` (`response_time`),
-  KEY `is_up` (`is_up`),
-  KEY `hour_datetime` (`hour_datetime`),
-  KEY `is_up_hour_datetime` (`is_up`,`hour_datetime`)
+  KEY `stats_idx_date_datetime` (`date_datetime`),
+  KEY `stats_idx_is_up_date_datetime` (`is_up`,`date_datetime`),
+  KEY `stats_idx_is_up_hour_datetime` (`is_up`,`hour_datetime`),
+  KEY `stats_idx_hour_datetime` (`hour_datetime`),
+  KEY `stats_idx_is_up` (`is_up`),
+  KEY `stats_idx_response_time` (`response_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 COMMIT;
 

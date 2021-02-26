@@ -20,10 +20,10 @@ $uptime_last_n_months = $db->query("
 SELECT t1.date,
 100/(
 	SELECT COUNT(*) FROM stats t2
-	WHERE date(t2.datetime)=t1.date AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+	WHERE t2.date_datetime=t1.date AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
 )*(
 	SELECT COUNT(*) FROM stats t2
-	WHERE date(t2.datetime)=t1.date AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+	WHERE t2.date_datetime=t1.date AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
 ) as uptime_percentage
 FROM (
 	SELECT DISTINCT date(datetime) as date

@@ -186,7 +186,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				<ul class="navbar-nav ml-auto">
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Uptime</a>
-						<div class="dropdown-menu">
+						<div class="dropdown-menu dropdown-menu-right">
 							<a class="dropdown-item" href="#uptime_summary">Summary</a>
 							<a class="dropdown-item" href="#uptime_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
 							<a class="dropdown-item" href="#uptime_heatmap">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
@@ -194,7 +194,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time</a>
-						<div class="dropdown-menu">
+						<div class="dropdown-menu dropdown-menu-right">
 							<a class="dropdown-item" href="#response_time_summary">Summary</a>
 							<a class="dropdown-item" href="#response_time_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
 							<a class="dropdown-item" href="#response_time_heatmap">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>

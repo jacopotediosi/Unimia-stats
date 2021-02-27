@@ -76,29 +76,17 @@ while ($row = mysqli_fetch_assoc($response_time_last_n_months)) {
 	$response_time_last_n_months_array[$row['date']] = (double) $row['avg'];
 }
 
-// Response time during week
-$response_time_during_week = $db->query("
-SELECT DAYNAME(datetime) AS dayname, avg(response_time) AS avg
+
+// Response time heatmap
+$response_time_heatmap_array = [];
+$response_time_heatmap = $db->query("
+SELECT DAYNAME(datetime) AS dayname, hour_datetime AS hour, avg(response_time) AS avg
 FROM stats
 WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH AND is_up=1
-GROUP BY DAYNAME(datetime)
-ORDER BY FIELD(dayname , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday', 'Sunday')
+GROUP BY DAYNAME(datetime), hour_datetime
 ");
-$response_time_during_week_array = [];
-while ($row = mysqli_fetch_assoc($response_time_during_week)) {
-	$response_time_during_week_array[$row['dayname']] = (double) $row['avg'];
-}
-
-// Response time during day
-$response_time_during_day = $db->query("
-SELECT hour(datetime) AS hour, avg(response_time) AS avg
-FROM stats WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH AND is_up=1
-GROUP BY hour(datetime)
-ORDER BY hour ASC
-");
-$response_time_during_day_array = [];
-while ($row = mysqli_fetch_assoc($response_time_during_day)) {
-	$response_time_during_day_array[$row['hour']] = (double) $row['avg'];
+while ($row = mysqli_fetch_assoc($response_time_heatmap)) {
+	$response_time_heatmap_array[$row['dayname']][$row['hour']] = (double) $row['avg'];
 }
 
 // Detailed view uptime
@@ -209,8 +197,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="#response_time_summary">Summary</a>
 							<a class="dropdown-item" href="#response_time_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
-							<a class="dropdown-item" href="#response_time_during_week">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
-							<a class="dropdown-item" href="#response_time_during_day">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
+							<a class="dropdown-item" href="#response_time_heatmap">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
@@ -305,21 +292,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				<canvas id="response_time_last_n_months_canvas"></canvas>
 			</div>
 
-			<div class="row text-center">
-				<!-- During week -->
-				<div class="col-lg-6">
-					<h2 id="response_time_during_week" class="mt-4 mb-3">During week (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
-					<div style="height: 300px">
-						<canvas id="response_time_during_week_canvas"></canvas>
-					</div>
-				</div>
-				<!-- During day -->
-				<div class="col-lg-6">
-					<h2 id="response_time_during_day" class="mt-4 mb-3">During day (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
-					<div style="height: 300px">
-						<canvas id="response_time_during_day_canvas"></canvas>
-					</div>
-				</div>
+			<!-- Heatmap -->
+			<h2 id="response_time_heatmap" class="mt-4 mb-3 text-center">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+			<div style="height: 300px">
+				<canvas id="response_time_heatmap_canvas"></canvas>
 			</div>
 
 			<!-- DETAILED VIEW -->
@@ -748,93 +724,126 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			};
 		</script>
 
-		<!-- Average response time during week graph -->
+		<!-- Average response time heatmap -->
 		<script type="text/javascript">
-			new Chart(document.getElementById('response_time_during_week_canvas'), {
-				type: 'bar',
-				data: {
-					labels: <?php echo json_encode(array_keys($response_time_during_week_array)); ?>,
-					datasets: [{
-						data: <?php echo json_encode(array_values($response_time_during_week_array)); ?>
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
+			// Heatmap array
+			response_time_heatmap_array = <?php echo json_encode($response_time_heatmap_array); ?>;
+
+			// Define the colors of the datasets and their range of values
+			response_time_heatmap_legend = [
+				{color:"#c70000", hover_color:"#b30000", min:15000, max:100000, label:">15s"},    // Red
+				{color:"#e87d00", hover_color:"#cc6d00", min:9000, max:14999,   label:"9-14,9s"}, // Orange
+				{color:"#f0ca0f", hover_color:"#d8b60e", min:6000, max:8999,    label:"6-8,9s"},  // Yellow
+				{color:"#8fda3e", hover_color:"#75c125", min:4000, max:5999,    label:"4-5,9s"},  // Light green
+				{color:"#00b300", hover_color:"#009900", min:3000, max:3999,    label:"3-3,9s"},  // Green
+				{color:"#008000", hover_color:"#006600", min:0000, max:2999,    label:"<3s"}      // Dark green
+			];
+			
+			// Inizialize datasets
+			response_time_heatmap_datasets = [];
+			for(i in response_time_heatmap_legend) {
+				response_time_heatmap_datasets.push({
+					data: [],
+					label: response_time_heatmap_legend[i].label,
+					backgroundColor: response_time_heatmap_legend[i].color,
+					hoverBackgroundColor: response_time_heatmap_legend[i].hover_color,
+					width(c) {
+						const a = c.chart.chartArea || {};
+						return (a.right - a.left) / 24 - 1;
 					},
-					scales: {
-						yAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Avg response time'
-							},
-							ticks: {
-								callback: function(value, index, values) {
-									return value + ' ms';
-								}
-							}
-						}],
-						xAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Day'
-							}
-						}]
-					},
-					tooltips: {
-						displayColors: false,
-						callbacks: {
-							label: function(tooltipItems, data) {
-								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms';
-							}
+					height(c) {
+						const a = c.chart.chartArea || {};
+						return (a.bottom - a.top) / 7 - 1;
+					}
+				});
+			}
+
+			// Fill datasets with actual data
+			for(day in response_time_heatmap_array) {
+				for(hour in response_time_heatmap_array[day]) {
+					// Get the response_time_value
+					var response_time_value = response_time_heatmap_array[day][hour];
+					// Select the right color from the legend
+					for(legend in response_time_heatmap_legend) {
+						if(Math.round(response_time_value)>=response_time_heatmap_legend[legend].min && Math.round(response_time_value)<=response_time_heatmap_legend[legend].max) {
+							// Add to the right dataset
+							response_time_heatmap_datasets[legend].data.push({x:hour, y:day, v:response_time_value});
+							break;
 						}
 					}
 				}
-			});
-		</script>
-
-		<!-- Average response time during day graph -->
-		<script type="text/javascript">
-			new Chart(document.getElementById('response_time_during_day_canvas'), {
-				type: 'line',
+			}
+			
+			response_time_heatmap_chart = new Chart(document.getElementById('response_time_heatmap_canvas'), {
+				type: 'matrix',
 				data: {
-					labels: <?php echo json_encode(array_keys($response_time_during_day_array)); ?>,
-					datasets: [{
-						data: <?php echo json_encode(array_values($response_time_during_day_array)); ?>
-					}]
+					datasets: response_time_heatmap_datasets
 				},
 				options: {
 					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Avg response time'
-							},
-							ticks: {
-								callback: function(value, index, values) {
-									return value + ' ms';
-								}
-							}
-						}],
-						xAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Hour'
-							}
-						}]
-					},
 					tooltips: {
 						displayColors: false,
 						callbacks: {
+							title: function(tooltipItems, data) {
+								var hovered_item = data.datasets[tooltipItems[0].datasetIndex].data[tooltipItems[0].index];
+								return hovered_item.y + ' between ' + ("0"+hovered_item.x).slice(-2) + ':00 and '+ (("0"+(parseInt(hovered_item.x)+1)).slice(-2)) + ':00';
+							},
 							label: function(tooltipItems, data) {
-								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms';
+								var hovered_item = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
+								return 'Avg response time: ' + hovered_item.v + ' ms';
 							}
 						}
+					},
+					scales: {
+						xAxes: [{
+							type: 'time',
+							offset: true,
+							time: {
+								parser: 'HH',
+								unit: 'hour',
+								displayFormats: {
+									hour: 'HH'
+								}
+							},
+							ticks: {
+								padding: 10
+							},
+							gridLines: {
+								display: false,
+								drawBorder: false,
+								tickMarkLength: 0,
+							},
+							scaleLabel: {
+								display: true,
+								labelString: 'Daytime'
+							}
+						}],
+						yAxes: [{
+							type: 'time',
+							offset: true,
+							time: {
+								unit: 'day',
+								parser: 'dddd',
+								displayFormats: {
+									day: 'ddd'
+								},
+								isoWeekday: 4
+							},
+							position: 'left',
+							ticks: {
+								reverse: true,
+								padding: 10
+							},
+							gridLines: {
+								display: false,
+								drawBorder: false,
+								tickMarkLength: 0
+							},
+							scaleLabel: {
+								display: true,
+								labelString: 'Weekday'
+							}
+						}]
 					}
 				}
 			});

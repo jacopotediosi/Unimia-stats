@@ -388,7 +388,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
 		<!-- Chart.js Zoom Plugin and its dependencies -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous"></script>
-		<script src="/js/chartjs-plugin-zoom.min.js"></script>
+		<script src="/js/chartjs-plugin-zoom.min.js"></script> <!-- Local edited version instead of CDN until they fix https://github.com/chartjs/chartjs-plugin-zoom/pull/429 -->
 		<!-- Chart.js Matrix Plugin -->
 		<script src="/js/chartjs-chart-matrix.min.js"></script>
 

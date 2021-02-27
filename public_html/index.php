@@ -14,8 +14,8 @@ $uptime_week  = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CAS
 $uptime_month = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY")->fetch_row();
 $uptime_all   = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats")->fetch_row();
 
-// Uptime in last n months
-$uptime_last_n_months = $db->query("
+// Daily uptime
+$daily_uptime = $db->query("
 SELECT t1.date,
 100/(
 	SELECT COUNT(*) FROM stats t2

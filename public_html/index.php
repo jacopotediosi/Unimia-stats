@@ -548,9 +548,9 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 			// Define the colors of the datasets and their range of values
 			uptime_heatmap_legend = [
-				{color:"#c70000", hover_color:"#b30000", min:00, max:25,  label: "<=25% uptime"},  // Red
-				{color:"#e87d00", hover_color:"#cc6d00", min:26, max:50,  label: "26-50% uptime"}, // Orange
-				{color:"#f0ca0f", hover_color:"#d8b60e", min:51, max:70,  label: "51-70% uptime"}, // Yellow
+				{color:"#c70000", hover_color:"#b30000", min:00, max:50,  label: "<=50% uptime"},  // Red
+				{color:"#e87d00", hover_color:"#cc6d00", min:51, max:60,  label: "51-60% uptime"}, // Orange
+				{color:"#f0ca0f", hover_color:"#d8b60e", min:61, max:70,  label: "61-70% uptime"}, // Yellow
 				{color:"#8fda3e", hover_color:"#75c125", min:71, max:80,  label: "71-80% uptime"}, // Light green
 				{color:"#00b300", hover_color:"#009900", min:81, max:90,  label: "81-90% uptime"}, // Green
 				{color:"#008000", hover_color:"#006600", min:91, max:100, label: ">90% uptime"}    // Dark green

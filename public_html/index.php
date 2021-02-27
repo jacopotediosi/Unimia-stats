@@ -539,11 +539,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					label: uptime_heatmap_legend[i].label,
 					backgroundColor: uptime_heatmap_legend[i].color,
 					hoverBackgroundColor: uptime_heatmap_legend[i].hover_color,
-					width(c) {
+					width: function(c) {
 						const a = c.chart.chartArea || {};
 						return (a.right - a.left) / 24 - 1;
 					},
-					height(c) {
+					height: function(c) {
 						const a = c.chart.chartArea || {};
 						return (a.bottom - a.top) / 7 - 1;
 					}
@@ -747,11 +747,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					label: response_time_heatmap_legend[i].label,
 					backgroundColor: response_time_heatmap_legend[i].color,
 					hoverBackgroundColor: response_time_heatmap_legend[i].hover_color,
-					width(c) {
+					width: function(c) {
 						const a = c.chart.chartArea || {};
 						return (a.right - a.left) / 24 - 1;
 					},
-					height(c) {
+					height: function(c) {
 						const a = c.chart.chartArea || {};
 						return (a.bottom - a.top) / 7 - 1;
 					}

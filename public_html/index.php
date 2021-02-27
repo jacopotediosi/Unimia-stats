@@ -5,7 +5,7 @@ $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSW
 // Used to limit the importance of previous months in charts which must show very recent data
 $n_months_short_term = (int) getenv('N_MONTHS_SHORT_TERM');
 
-// First date
+// First date //TODO: optimized
 $first_date   = $db->query("SELECT DATE(datetime) FROM stats ORDER BY datetime asc LIMIT 1")->fetch_row()[0];
 
 // Uptime summary
@@ -466,8 +466,9 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 								parser: 'YYYY-MM-DD',
 								unit: 'day',
 								displayFormats: {
-									day: 'YYYY-MM-DD'
-								}
+									day: 'DD/MM/YYYY'
+								},
+								tooltipFormat: 'dddd DD/MM/YYYY'
 							},
 							scaleLabel: {
 								display: true,
@@ -673,8 +674,9 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 								parser: 'YYYY-MM-DD',
 								unit: 'day',
 								displayFormats: {
-									day: 'YYYY-MM-DD'
-								}
+									day: 'DD/MM/YYYY'
+								},
+								tooltipFormat: 'dddd DD/MM/YYYY'
 							},
 							scaleLabel: {
 								display: true,

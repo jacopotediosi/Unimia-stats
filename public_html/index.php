@@ -2,9 +2,8 @@
 // DB Connection
 $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
 
-// N months
-$n_months_long_term  = (int) getenv('N_MONTHS_LONG_TERM');  // Used when query/graph details day by day
-$n_months_short_term = (int) getenv('N_MONTHS_SHORT_TERM'); // Used when query/graph summarizes by hours/days of week
+// Used to limit the importance of previous months in charts which must show very recent data
+$n_months_short_term = (int) getenv('N_MONTHS_SHORT_TERM');
 
 // First date
 $first_date   = $db->query("SELECT DATE(datetime) FROM stats ORDER BY datetime asc LIMIT 1")->fetch_row()[0];
@@ -20,21 +19,20 @@ $uptime_last_n_months = $db->query("
 SELECT t1.date,
 100/(
 	SELECT COUNT(*) FROM stats t2
-	WHERE t2.date_datetime=t1.date AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+	WHERE t2.date_datetime=t1.date
 )*(
 	SELECT COUNT(*) FROM stats t2
-	WHERE t2.date_datetime=t1.date AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_long_term MONTH
+	WHERE t2.date_datetime=t1.date AND t2.is_up=1
 ) as uptime_percentage
 FROM (
 	SELECT DISTINCT date(datetime) as date
 	FROM stats
-	WHERE datetime >= NOW() - INTERVAL $n_months_long_term MONTH
 ) t1
 ORDER BY date ASC
 ");
-$uptime_last_n_months_array = [];
-while ($row = mysqli_fetch_assoc($uptime_last_n_months)) {
-	$uptime_last_n_months_array[$row['date']] = (double) $row['uptime_percentage'];
+$daily_uptime_array = [];
+while ($row = mysqli_fetch_assoc($daily_uptime)) {
+	$daily_uptime_array[$row['date']] = (double) $row['uptime_percentage'];
 }
 
 // Uptime heatmap
@@ -63,17 +61,17 @@ $response_time_week  = (int) $db->query("SELECT avg(response_time) FROM stats WH
 $response_time_month = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY AND is_up=1")->fetch_row()[0];
 $response_time_all   = (int) $db->query("SELECT avg(response_time) FROM stats WHERE is_up=1")->fetch_row()[0];
 
-// Response time in last n months
-$response_time_last_n_months = $db->query("
+// Daily response time
+$daily_response_time = $db->query("
 SELECT date(datetime) AS date, avg(response_time) AS avg
 FROM stats
-WHERE datetime >= NOW() - INTERVAL $n_months_long_term MONTH AND is_up=1
+WHERE is_up=1
 GROUP BY date(datetime)
 ORDER BY date ASC
 ");
-$response_time_last_n_months_array = [];
-while ($row = mysqli_fetch_assoc($response_time_last_n_months)) {
-	$response_time_last_n_months_array[$row['date']] = (double) $row['avg'];
+$daily_response_time_array = [];
+while ($row = mysqli_fetch_assoc($daily_response_time)) {
+	$daily_response_time_array[$row['date']] = (double) $row['avg'];
 }
 
 
@@ -188,16 +186,16 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Uptime</a>
 						<div class="dropdown-menu dropdown-menu-right">
 							<a class="dropdown-item" href="#uptime_summary">Summary</a>
-							<a class="dropdown-item" href="#uptime_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
-							<a class="dropdown-item" href="#uptime_heatmap">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
+							<a class="dropdown-item" href="#daily_uptime">Daily</a>
+							<a class="dropdown-item" href="#uptime_heatmap">Weekday / Daytime Heatmap</a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Response time</a>
 						<div class="dropdown-menu dropdown-menu-right">
 							<a class="dropdown-item" href="#response_time_summary">Summary</a>
-							<a class="dropdown-item" href="#response_time_last_n_months">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></a>
-							<a class="dropdown-item" href="#response_time_heatmap">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</a>
+							<a class="dropdown-item" href="#daily_response_time">Daily</a>
+							<a class="dropdown-item" href="#response_time_heatmap">Weekday / Daytime Heatmap</a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
@@ -249,10 +247,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- In last n months -->
-			<h2 id="uptime_last_n_months" class="mt-4 mb-3 text-center">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<h2 id="daily_uptime" class="mt-4 mb-3 text-center">Daily</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
-				<canvas id="uptime_last_n_months_canvas"></canvas>
+				<canvas id="daily_uptime_canvas"></canvas>
 			</div>
 			
 			<!-- Heatmap -->
@@ -286,10 +284,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- In last n months -->
-			<h2 id="response_time_last_n_months" class="mt-4 mb-3 text-center">Daily for the past <?php echo $n_months_long_term; echo ($n_months_long_term>1) ? ' months':' month'; ?></h2>
+			<h2 id="daily_response_time" class="mt-4 mb-3 text-center">Daily</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
-				<canvas id="response_time_last_n_months_canvas"></canvas>
+				<canvas id="daily_response_time_canvas"></canvas>
 			</div>
 
 			<!-- Heatmap -->
@@ -436,12 +434,12 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 		<!-- Uptime in last n months graph -->
 		<script type="text/javascript">
-			uptime_last_n_months_chart = new Chart(document.getElementById('uptime_last_n_months_canvas'), {
+			daily_uptime_chart = new Chart(document.getElementById('daily_uptime_canvas'), {
 				type: 'line',
 				data: {
-					labels: <?php echo json_encode(array_keys($uptime_last_n_months_array)); ?>,
+					labels: <?php echo json_encode(array_keys($daily_uptime_array)); ?>,
 					datasets: [{
-						data: <?php echo json_encode(array_values($uptime_last_n_months_array)); ?>
+						data: <?php echo json_encode(array_values($daily_uptime_array)); ?>
 					}]
 				},
 				options: {
@@ -506,10 +504,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				}
 			});
 
-			document.getElementById('uptime_last_n_months_canvas').onclick = function (evt) {
-				var clicked_points = uptime_last_n_months_chart.getElementAtEvent(evt);
+			document.getElementById('daily_uptime_canvas').onclick = function (evt) {
+				var clicked_points = daily_uptime_chart.getElementAtEvent(evt);
 				if (clicked_points.length) {
-					detailed_view_change_date(uptime_last_n_months_chart.data.labels[clicked_points[0]._index]);
+					detailed_view_change_date(daily_uptime_chart.data.labels[clicked_points[0]._index]);
 					$('html,body').animate({
 						'scrollTop':   $('#detailed_view_uptime').offset().top-56
 					}, 'slow');
@@ -644,12 +642,12 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 		<!-- Average response time in last n months graph -->
 		<script type="text/javascript">
-			response_time_last_n_months_chart = new Chart(document.getElementById('response_time_last_n_months_canvas'), {
+			daily_response_time_chart = new Chart(document.getElementById('daily_response_time_canvas'), {
 				type: 'line',
 				data: {
-					labels: <?php echo json_encode(array_keys($response_time_last_n_months_array)); ?>,
+					labels: <?php echo json_encode(array_keys($daily_response_time_array)); ?>,
 					datasets: [{
-						data: <?php echo json_encode(array_values($response_time_last_n_months_array)); ?>
+						data: <?php echo json_encode(array_values($daily_response_time_array)); ?>
 					}]
 				},
 				options: {
@@ -713,10 +711,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				}
 			});
 		
-			document.getElementById('response_time_last_n_months_canvas').onclick = function (evt) {
-				var clicked_points = response_time_last_n_months_chart.getElementAtEvent(evt);
+			document.getElementById('daily_response_time_canvas').onclick = function (evt) {
+				var clicked_points = daily_response_time_chart.getElementAtEvent(evt);
 				if (clicked_points.length) {
-					detailed_view_change_date(response_time_last_n_months_chart.data.labels[clicked_points[0]._index]);
+					detailed_view_change_date(daily_response_time_chart.data.labels[clicked_points[0]._index]);
 					$('html,body').animate({
 						'scrollTop':   $('#detailed_view_uptime').offset().top-56
 					}, 'slow');

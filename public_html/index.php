@@ -116,42 +116,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 		<!-- Bootstrap datepicker CSS -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.standalone.min.css" integrity="sha512-p4vIrJ1mDmOVghNMM4YsWxm0ELMJ/T0IkdEvrkNHIcgFsSzDi/fV7YxzTzb3mnMvFPawuIyIrHcpxClauEfpQg==" crossorigin="anonymous">
-
-		<style type="text/css">
-			/* Navbar & scroll to anchor fix */
-			html {
-				scroll-padding-top: 56px;
-			}
-			body {
-				padding-top: 56px;
-			}
-			/* Datepicker */
-			.datepicker, .table-condensed {
-				width: 300px;
-				height: 300px;
-			}
-			/* Github corner */
-			.github-corner {
-				margin-top: 2px;
-			}
-			.github-corner:hover .octo-arm {
-				animation:octocat-wave 560ms ease-in-out
-			}
-			.github-corner svg {
-				fill:#343A40;
-				color:#fff;
-				border: 0;
-			}
-			@keyframes octocat-wave {
-				0%,100% {transform:rotate(0)}
-				20%,60% {transform:rotate(-25deg)}
-				40%,80% {transform:rotate(10deg)}
-			}
-			@media (max-width:500px) {
-				.github-corner:hover .octo-arm {animation:none}
-				.github-corner .octo-arm {animation:octocat-wave 560ms ease-in-out}
-			}
-		</style>
+		<!-- Main theme -->
+		<link rel="stylesheet" href="/css/main.css">
 
 <?php
 	$gtag_id = getenv('GTAG_ID');

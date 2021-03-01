@@ -28,17 +28,20 @@ try:
 	except requests.exceptions.Timeout:	# https://github.com/psf/requests/blob/master/requests/exceptions.py
 		raise Exception('CAS HTTP request timed out')
 
-	# First request worked
+	# First request obtained a response
 	which_request_to_save = 1
 
+	# Evaluate if obtained response is ok
 	if cas_request.status_code!=200:
 		raise Exception("CAS status_code is " + str(cas_request.status_code))
 	cas_soup = bs4(cas_request.text, 'html.parser')
 
+	# Extract 'lt' token from the response
 	lt = cas_soup.find('input', {'name':'lt'})['value']
 	if not lt:
 		raise Exception('CAS "lt" parameter not found')
 
+	# Extract 'execution' token from the response
 	execution = cas_soup.find('input', {'name':'execution'})['value']
 	if not execution:
 		raise Exception('CAS "execution" parameter not found')
@@ -49,10 +52,10 @@ try:
 	except requests.exceptions.Timeout:	# https://github.com/psf/requests/blob/master/requests/exceptions.py
 		raise Exception('Unimia HTTP request timed out')
 
-	# Second request worked
+	# Second request obtained a response
 	which_request_to_save = 2
 
-	# UP/DOWN evaluation
+	# Unimia UP/DOWN evaluation
 	unimia_request_lower = unimia_request.text.lower()
 	if unimia_request.status_code!=200:
 		raise Exception("Unimia status_code is " + str(unimia_request.status_code))
@@ -93,7 +96,7 @@ try:
 except Exception as e:
 		is_up         = False
 		response_time = 0
-		reason        = re.sub(r"ticket=.{10,50} ", "ticket=REDACTED ", str(e)[0:255], flags=re.IGNORECASE) # Redact CAS ticket in Exception
+		reason        = re.sub(r"ticket=.{10,50} ", "ticket=REDACTED ", str(e)[0:255], flags=re.IGNORECASE) # Redact CAS ticket from the exception
 		print(date_time + ": " + str(e))
 
 # DB Connection
@@ -113,18 +116,18 @@ db_conn.commit()
 db_cursor.close()
 db_conn.close()
 
-# Define private and public path
+# Define private and public path (private path is for debugging purposes and it will contain original unredacted HTML responses corresponding to the saved screenshots of the last week)
 private_path    = "/private/"
 public_path     = "/screenshot/"
 
-# If not up
+# If it wasn't up and there is a response to save (no HTTP timeout / other HTTP problems)
 if not is_up and which_request_to_save != 0:
 	# Files (html pages, screenshots...) filenames (without extension) and their absolute paths
 	filename        = date_time.replace(":","-").replace(" ","_")
 	html_path       = private_path + filename
 	screenshot_path = public_path + filename
 
-	# Save HTML page to file
+	# Save HTML response to file
 	if which_request_to_save == 1:
 		# CAS
 		try:

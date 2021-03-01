@@ -66,6 +66,8 @@ try:
 		raise Exception('Page contains "matricola e\' inesistente"')
 	elif "errore di timeout" in unimia_request_lower:
 		raise Exception('Page contains "errore di timeout"')
+	elif "portlet request timed out" in unimia_request_lower:
+		raise Exception('Page contains "portlet request timed out"')
 	elif "si è verificato un errore" in unimia_request_lower:
 		raise Exception('Page contains "si è verificato un errore"')
 	elif "il server remoto ha restituito un codice di risposta http non valido" in unimia_request_lower:

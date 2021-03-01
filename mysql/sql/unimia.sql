@@ -12,19 +12,21 @@ CREATE DATABASE IF NOT EXISTS `unimia` DEFAULT CHARACTER SET latin1 COLLATE lati
 USE `unimia`;
 
 CREATE TABLE IF NOT EXISTS `stats` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_datetime` date GENERATED ALWAYS AS (cast(`datetime` as date)) VIRTUAL,
+  `hour_datetime` tinyint(4) GENERATED ALWAYS AS (hour(`datetime`)) VIRTUAL,
   `is_up` tinyint(1) NOT NULL,
   `response_time` mediumint(9) NOT NULL DEFAULT '0',
   `reason` varchar(255) NOT NULL DEFAULT '',
-  `hour_datetime` tinyint(4) GENERATED ALWAYS AS (hour(`datetime`)) VIRTUAL,
-  `date_datetime` date GENERATED ALWAYS AS (cast(`datetime` as date)) VIRTUAL,
-  PRIMARY KEY (`datetime`),
+  PRIMARY KEY (`id`),
   KEY `stats_idx_date_datetime` (`date_datetime`),
   KEY `stats_idx_is_up_date_datetime` (`is_up`,`date_datetime`),
   KEY `stats_idx_is_up_hour_datetime` (`is_up`,`hour_datetime`),
   KEY `stats_idx_hour_datetime` (`hour_datetime`),
   KEY `stats_idx_is_up` (`is_up`),
-  KEY `stats_idx_response_time` (`response_time`)
+  KEY `stats_idx_response_time` (`response_time`),
+  KEY `stats_idx_datetime` (`datetime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 COMMIT;
 

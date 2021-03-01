@@ -5,98 +5,96 @@ $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSW
 // Used to limit the importance of previous months in charts which must show very recent data
 $n_months_short_term = (int) getenv('N_MONTHS_SHORT_TERM');
 
-// First date //TODO: optimized
-$first_date   = $db->query("SELECT DATE(datetime) FROM stats ORDER BY datetime asc LIMIT 1")->fetch_row()[0];
+// First date
+$first_date   = $db->query("SELECT date_datetime FROM stats ORDER BY date_datetime ASC LIMIT 1")->fetch_row()[0];
 
 // Uptime summary
-$uptime_today = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 24 HOUR")->fetch_row();
-$uptime_week  = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 7 DAY")->fetch_row();
-$uptime_month = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY")->fetch_row();
-$uptime_all   = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats")->fetch_row();
+$uptime_today = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 24 HOUR")->fetch_row();
+$uptime_week  = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 7 DAY")->fetch_row();
+$uptime_month = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY")->fetch_row();
+$uptime_all   = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats")->fetch_row();
 
 // Daily uptime
 $daily_uptime = $db->query("
-SELECT t1.date,
+SELECT t1.date_datetime,
 100/(
 	SELECT COUNT(*) FROM stats t2
-	WHERE t2.date_datetime=t1.date
+	WHERE t2.date_datetime=t1.date_datetime
 )*(
 	SELECT COUNT(*) FROM stats t2
-	WHERE t2.date_datetime=t1.date AND t2.is_up=1
-) as uptime_percentage
+	WHERE t2.date_datetime=t1.date_datetime AND t2.is_up=1
+) AS uptime_percentage
 FROM (
-	SELECT DISTINCT date(datetime) as date
+	SELECT DISTINCT date_datetime
 	FROM stats
 ) t1
-ORDER BY date ASC
 ");
 $daily_uptime_array = [];
 while ($row = mysqli_fetch_assoc($daily_uptime)) {
-	$daily_uptime_array[$row['date']] = (double) $row['uptime_percentage'];
+	$daily_uptime_array[$row['date_datetime']] = (double) $row['uptime_percentage'];
 }
 
 // Uptime heatmap
 $uptime_heatmap_array = [];
 $uptime_heatmap = $db->query("
-SELECT t1.dayname, t1.hour, 
+SELECT t1.dayname, t1.hour_datetime, 
 100/(
 	SELECT COUNT(*) FROM stats t2
-	WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
 )*(
-	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
 ) as uptime_percentage
 FROM (
-	SELECT DISTINCT dayname(datetime) as dayname, hour(datetime) as hour
+	SELECT DISTINCT dayname(datetime) as dayname, hour_datetime
 	FROM stats
 	WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH
 ) t1
 ");
 while ($row = mysqli_fetch_assoc($uptime_heatmap)) {
-	$uptime_heatmap_array[$row['dayname']][$row['hour']] = (double) $row['uptime_percentage'];
+	$uptime_heatmap_array[$row['dayname']][$row['hour_datetime']] = (double) $row['uptime_percentage'];
 }
 
 // Response time summary
-$response_time_today = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 24 HOUR AND is_up=1")->fetch_row()[0];
-$response_time_week  = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 7 DAY AND is_up=1")->fetch_row()[0];
-$response_time_month = (int) $db->query("SELECT avg(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY AND is_up=1")->fetch_row()[0];
-$response_time_all   = (int) $db->query("SELECT avg(response_time) FROM stats WHERE is_up=1")->fetch_row()[0];
+$response_time_today = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 24 HOUR AND is_up=1")->fetch_row()[0];
+$response_time_week  = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 7 DAY AND is_up=1")->fetch_row()[0];
+$response_time_month = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE datetime >= NOW() - INTERVAL 30 DAY AND is_up=1")->fetch_row()[0];
+$response_time_all   = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE is_up=1")->fetch_row()[0];
 
 // Daily response time
 $daily_response_time = $db->query("
-SELECT date(datetime) AS date, avg(response_time) AS avg
+SELECT date_datetime, AVG(response_time) AS avg
 FROM stats
 WHERE is_up=1
-GROUP BY date(datetime)
-ORDER BY date ASC
+GROUP BY date_datetime
 ");
 $daily_response_time_array = [];
 while ($row = mysqli_fetch_assoc($daily_response_time)) {
-	$daily_response_time_array[$row['date']] = (double) $row['avg'];
+	$daily_response_time_array[$row['date_datetime']] = (double) $row['avg'];
 }
 
 
 // Response time heatmap
 $response_time_heatmap_array = [];
 $response_time_heatmap = $db->query("
-SELECT DAYNAME(datetime) AS dayname, hour_datetime AS hour, avg(response_time) AS avg
+SELECT DAYNAME(datetime) AS dayname, hour_datetime, AVG(response_time) AS avg
 FROM stats
 WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH AND is_up=1
 GROUP BY DAYNAME(datetime), hour_datetime
 ");
 while ($row = mysqli_fetch_assoc($response_time_heatmap)) {
-	$response_time_heatmap_array[$row['dayname']][$row['hour']] = (double) $row['avg'];
+	$response_time_heatmap_array[$row['dayname']][$row['hour_datetime']] = (double) $row['avg'];
 }
 
 // Detailed view uptime
-$detailed_view_uptime = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE date(datetime) = date(NOW())")->fetch_row();
+$detailed_view_uptime = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE date_datetime = CURDATE()")->fetch_row();
 
 // Detailed view response time
-$detailed_view_response_time_avg = (int) $db->query("SELECT avg(response_time) FROM stats WHERE date(datetime) = date(NOW()) AND is_up=1")->fetch_row()[0];
-$detailed_view_response_time_min = (int) $db->query("SELECT min(response_time) FROM stats WHERE date(datetime) = date(NOW()) AND is_up=1")->fetch_row()[0];
-$detailed_view_response_time_max = (int) $db->query("SELECT max(response_time) FROM stats WHERE date(datetime) = date(NOW()) AND is_up=1")->fetch_row()[0];
+$detailed_view_response_time_avg = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_row()[0];
+$detailed_view_response_time_min = (int) $db->query("SELECT MIN(response_time) FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_row()[0];
+$detailed_view_response_time_max = (int) $db->query("SELECT MAX(response_time) FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_row()[0];
 
 // Detailed view time graph
-$detailed_view_time = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') as time, response_time, reason FROM stats WHERE date(datetime) = date(NOW()) ORDER by time ASC");
+$detailed_view_time = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') AS time, response_time, reason FROM stats WHERE date_datetime = CURDATE()");
 $detailed_view_time_array = [];
 while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 	$detailed_view_time_array[$row['time']] = [

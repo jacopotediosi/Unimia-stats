@@ -28,16 +28,16 @@ if ( $_GET['operation']==='detailed_view' ) {
 		$date = $db->real_escape_string($_GET['date']);
 
 		// Get uptimes
-		$uptime = $db->query("SELECT count(CASE WHEN is_up=1 THEN 1 END),count(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE date(datetime) = '$date'")->fetch_row();
+		$uptime = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE date_datetime = '$date'")->fetch_row();
 		$uptime = [(int) $uptime[0], (int) $uptime[1]];
 
 		// Get response times
-		$response_avg = (int) $db->query("SELECT avg(response_time) FROM stats WHERE date(datetime) = '$date' AND is_up=1")->fetch_row()[0];
-		$response_min = (int) $db->query("SELECT min(response_time) FROM stats WHERE date(datetime) = '$date' AND is_up=1")->fetch_row()[0];
-		$response_max = (int) $db->query("SELECT max(response_time) FROM stats WHERE date(datetime) = '$date' AND is_up=1")->fetch_row()[0];
+		$response_avg = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_row()[0];
+		$response_min = (int) $db->query("SELECT MIN(response_time) FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_row()[0];
+		$response_max = (int) $db->query("SELECT MAX(response_time) FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_row()[0];
 
 		// Get time graph datas
-		$time_graph = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') as time, response_time, reason FROM stats WHERE date(datetime) = '$date' ORDER by time ASC");
+		$time_graph = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') AS time, response_time, reason FROM stats WHERE date_datetime = '$date'");
 		$time_graph_array = [];
 		while ($row = mysqli_fetch_assoc($time_graph)) {
 			$time_graph_array[$row['time']] = [

@@ -32,9 +32,10 @@ if ( $_GET['operation']==='detailed_view' ) {
 		$uptime = [(int) $uptime[0], (int) $uptime[1]];
 
 		// Get response times
-		$response_avg = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_row()[0];
-		$response_min = (int) $db->query("SELECT MIN(response_time) FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_row()[0];
-		$response_max = (int) $db->query("SELECT MAX(response_time) FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_row()[0];
+		$response = $db->query("SELECT AVG(response_time) AS avg, MIN(response_time) AS min, MAX(response_time) AS max FROM stats WHERE date_datetime = '$date' AND is_up=1")->fetch_assoc();
+		$response_avg = (int) $response["avg"];
+		$response_min = (int) $response["min"];
+		$response_max = (int) $response["max"];
 
 		// Get time graph datas
 		$time_graph = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') AS time, response_time, reason FROM stats WHERE date_datetime = '$date'");

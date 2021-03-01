@@ -89,9 +89,10 @@ while ($row = mysqli_fetch_assoc($response_time_heatmap)) {
 $detailed_view_uptime = $db->query("SELECT COUNT(CASE WHEN is_up=1 THEN 1 END),COUNT(CASE WHEN is_up=0 THEN 1 END) FROM stats WHERE date_datetime = CURDATE()")->fetch_row();
 
 // Detailed view response time
-$detailed_view_response_time_avg = (int) $db->query("SELECT AVG(response_time) FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_row()[0];
-$detailed_view_response_time_min = (int) $db->query("SELECT MIN(response_time) FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_row()[0];
-$detailed_view_response_time_max = (int) $db->query("SELECT MAX(response_time) FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_row()[0];
+$detailed_view_response_time = $db->query("SELECT AVG(response_time) AS avg, MIN(response_time) AS min, MAX(response_time) AS max FROM stats WHERE date_datetime = CURDATE() AND is_up=1")->fetch_assoc();
+$detailed_view_response_time_avg = (int) $detailed_view_response_time["avg"];
+$detailed_view_response_time_min = (int) $detailed_view_response_time["min"];
+$detailed_view_response_time_max = (int) $detailed_view_response_time["max"];
 
 // Detailed view time graph
 $detailed_view_time = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') AS time, response_time, reason FROM stats WHERE date_datetime = CURDATE()");

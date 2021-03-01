@@ -1,4 +1,4 @@
-FROM php:7.3.5-fpm-alpine
+FROM php:7-fpm-alpine
 
 # PHP-FPM production settings
 RUN mv $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini

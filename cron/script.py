@@ -116,7 +116,7 @@ db_conn.commit()
 db_cursor.close()
 db_conn.close()
 
-# Define private and public path (private path is for debugging purposes and it will contain original unredacted HTML responses corresponding to the saved screenshots of the last week)
+# Define private and public path (private path is for debugging purposes and it will contain original unredacted HTML responses corresponding to the saved screenshots of the last month)
 private_path    = "/private/"
 public_path     = "/screenshot/"
 
@@ -231,8 +231,8 @@ if not is_up and which_request_to_save != 0:
 	# Remove the original PNG file
 	os.remove(screenshot_path+".png")
 
-# Delete saved HTML pages older than 7 days
+# Delete saved HTML pages older than 30 days
 for f in os.listdir(private_path):
 	f = os.path.join(private_path, f)
-	if os.stat(f).st_mtime < time.time() - 7 * 86400 and os.path.isfile(f):
+	if os.stat(f).st_mtime < time.time() - 30 * 86400 and os.path.isfile(f):
 		os.remove(f)

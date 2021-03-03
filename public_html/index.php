@@ -459,11 +459,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						zoom: {
 							pan: {
 								enabled: true,
-								mode: 'x'
+								mode: 'x',
+								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
+								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
 							},
 							zoom: {
 								enabled: true,
 								mode: 'x',
+								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
+								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
 							}
 						}
 					}
@@ -667,11 +671,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						zoom: {
 							pan: {
 								enabled: true,
-								mode: 'x'
+								mode: 'x',
+								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
+								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
 							},
 							zoom: {
 								enabled: true,
 								mode: 'x',
+								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
+								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
 							}
 						}
 					}

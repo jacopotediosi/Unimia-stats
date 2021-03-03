@@ -72,7 +72,6 @@ while ($row = mysqli_fetch_assoc($daily_response_time)) {
 	$daily_response_time_array[$row['date_datetime']] = (double) $row['avg'];
 }
 
-
 // Response time heatmap
 $response_time_heatmap_array = [];
 $response_time_heatmap = $db->query("
@@ -119,7 +118,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<!-- Main theme -->
 		<link rel="stylesheet" href="/css/main.css">
 
-<?php
+<?php // Google Analytics JS (only if env var GTAG_ID is defined)
 	$gtag_id = getenv('GTAG_ID');
 	if ($gtag_id) {
 		echo <<<EOL
@@ -131,7 +130,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					gtag('js', new Date());
 					gtag('config', '$gtag_id');
 				</script>
-				<script type="text/javascript" charset="UTF-8" src="//cdn.cookie-script.com/s/fa5c2a49f4aa070719c30eb57383ee68.js"></script>
+				<!-- Cookie Script -->
+				<script type="text/javascript" charset="UTF-8" src="https://cdn.cookie-script.com/s/fa5c2a49f4aa070719c30eb57383ee68.js"></script>
 		EOL;
 	}
 ?>
@@ -211,7 +211,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				</div>
 			</div>
 
-			<!-- In last n months -->
+			<!-- Daily -->
 			<h2 id="daily_uptime" class="mt-4 mb-3 text-center">Daily</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
@@ -248,7 +248,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				</div>
 			</div>
 
-			<!-- In last n months -->
+			<!-- Daily -->
 			<h2 id="daily_response_time" class="mt-4 mb-3 text-center">Daily</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the detailed view of the dates</p>
 			<div style="height: 300px">
@@ -318,32 +318,30 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 		<!-- Jquery -->
 		<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-		<!-- Bootstrap JS (Bundle version already includes Popper.JS) -->
+		<!-- Bootstrap js (bundle version already includes Popper.js) -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-		<!-- Bootstrap datepicker JS -->
+		<!-- Bootstrap datepicker js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
 		<!-- Chart.js (and its dependency Moment.js) -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
-		<!-- Chart.js Zoom Plugin and its dependencies -->
+		<!-- Chart.js Zoom Plugin (and its dependency Hammer.js) -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous"></script>
 		<script src="/js/chartjs-plugin-zoom.min.js"></script> <!-- Local edited version instead of CDN until they fix https://github.com/chartjs/chartjs-plugin-zoom/pull/429 -->
 		<!-- Chart.js Matrix Plugin -->
 		<script src="/js/chartjs-chart-matrix.min.js"></script>
+		
+		<!-- Charts Constructors -->
+		<script src="/js/charts-constructors.js"></script>
 
 		<!-- Week starts with Monday in all charts -->
-		<script type="text/javascript">
-			moment.updateLocale('en', {
-				week: {
-					dow : 1
-				}
-			});
-		</script>
+		<script type="text/javascript">moment.updateLocale('en', {week: {dow: 1}});</script>
 
-		<!-- Uptime pie charts -->
-		<script type="text/javascript">
-			chart_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
-			chart_datas = [
+		<!-- Charts creation -->
+		<script type="text/javascript">	
+			<!-- Uptime donut charts -->
+			var chart_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
+			var chart_datas = [
 				[<?php echo $uptime_today[0]; ?>, <?php echo $uptime_today[1]; ?>],
 				[<?php echo $uptime_week[0]; ?>, <?php echo $uptime_week[1]; ?>],
 				[<?php echo $uptime_month[0]; ?>, <?php echo $uptime_month[1]; ?>],
@@ -351,475 +349,70 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			];
 
 			for (var i = 0; i < 4; i++) {
-				new Chart(document.getElementById(chart_ids[i]), {
-					type: 'doughnut',
-					data: {
-						labels: ['UP', 'DOWN'],
-						datasets: [{
-							data: chart_datas[i],
-							backgroundColor: [
-								'green',
-								'red'
-							]
-						}]
-					},
-					options: {
-						legend: {
-							display: false
-						},
-						tooltips: {
-							callbacks: {
-								label: function(tooltipItems, data) {
-									return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' times checked';
-								}
-							}
-						}
-					},
-					plugins: [{
-						beforeDraw: function (chart) {
-							var width = chart.chart.width,
-								height = chart.chart.height,
-								ctx = chart.chart.ctx;
-
-							ctx.restore();
-							ctx.font = (height / 150).toFixed(2) + "em sans-serif";
-							ctx.textBaseline = "middle";
-
-							var text = Math.round(100/(chart.data.datasets[0].data[0]+chart.data.datasets[0].data[1])*chart.data.datasets[0].data[0])+"%",
-								textX = Math.round((width - ctx.measureText(text).width) / 2),
-								textY = height / 2 - (chart.titleBlock.height - 3);
-
-							ctx.fillText(text, textX, textY);
-							ctx.save();
-						}
-					}]
-				});
+				chart_create_up_down_donuts(chart_ids[i], chart_datas[i][0], chart_datas[i][1]);
 			}
-		</script>
-
-		<!-- Uptime in last n months graph -->
-		<script type="text/javascript">
-			daily_uptime_chart = new Chart(document.getElementById('daily_uptime_canvas'), {
-				type: 'line',
-				data: {
-					labels: <?php echo json_encode(array_keys($daily_uptime_array)); ?>,
-					datasets: [{
-						data: <?php echo json_encode(array_values($daily_uptime_array)); ?>
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Uptime'
-							},
-							ticks: {
-								max: 100,
-								callback: function(value, index, values) {
-									return value + '%';
-								}
-							}
-						}],
-						xAxes: [{
-							type: 'time',
-							time: {
-								parser: 'YYYY-MM-DD',
-								unit: 'day',
-								displayFormats: {
-									day: 'DD/MM/YYYY'
-								},
-								tooltipFormat: 'dddd DD/MM/YYYY'
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Date'
-							},
-							ticks: {
-								min: '<?php echo max(date('Y-m-d', strtotime("-2 months")), $first_date); ?>' // Start zoomed in to show the last 2 months
-							}
-						}]
-					},
-					tooltips: {
-						displayColors: false,
-						callbacks: {
-							label: function(tooltipItems, data) {
-								return [
-									'Uptime: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + '%',
-									'Click to see this date details'
-								];
-							}
-						}
-					},
-					plugins: {
-						zoom: {
-							pan: {
-								enabled: true,
-								mode: 'x',
-								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
-								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
-							},
-							zoom: {
-								enabled: true,
-								mode: 'x',
-								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
-								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
-							}
-						}
-					}
-				}
-			});
-
-			document.getElementById('daily_uptime_canvas').onclick = function (evt) {
-				var clicked_points = daily_uptime_chart.getElementAtEvent(evt);
-				if (clicked_points.length) {
-					detailed_view_change_date(daily_uptime_chart.data.labels[clicked_points[0]._index]);
-					$('html,body').animate({
-						'scrollTop':   $('#detailed_view_uptime').offset().top-56
-					}, 'slow');
-				}
-			};
-		</script>
-
-		<!-- Uptime heatmap -->
-		<script type="text/javascript">
-			// Heatmap array
-			uptime_heatmap_array = <?php echo json_encode($uptime_heatmap_array); ?>;
-
-			// Define the colors of the datasets and their range of values
-			uptime_heatmap_legend = [
-				{color:"#c70000", hover_color:"#b30000", min:00, max:50,  label: "<=50% uptime"},  // Red
-				{color:"#e87d00", hover_color:"#cc6d00", min:51, max:60,  label: "51-60% uptime"}, // Orange
-				{color:"#f0ca0f", hover_color:"#d8b60e", min:61, max:70,  label: "61-70% uptime"}, // Yellow
-				{color:"#8fda3e", hover_color:"#75c125", min:71, max:80,  label: "71-80% uptime"}, // Light green
-				{color:"#00b300", hover_color:"#009900", min:81, max:90,  label: "81-90% uptime"}, // Green
-				{color:"#008000", hover_color:"#006600", min:91, max:100, label: ">90% uptime"}    // Dark green
-			];
-			
-			// Inizialize datasets
-			uptime_heatmap_datasets = [];
-			for(i in uptime_heatmap_legend) {
-				uptime_heatmap_datasets.push({
-					data: [],
-					label: uptime_heatmap_legend[i].label,
-					backgroundColor: uptime_heatmap_legend[i].color,
-					hoverBackgroundColor: uptime_heatmap_legend[i].hover_color,
-					width: function(c) {
-						const a = c.chart.chartArea || {};
-						return (a.right - a.left) / 24 - 1;
-					},
-					height: function(c) {
-						const a = c.chart.chartArea || {};
-						return (a.bottom - a.top) / 7 - 1;
-					}
-				});
-			}
-
-			// Fill datasets with actual data
-			for(day in uptime_heatmap_array) {
-				for(hour in uptime_heatmap_array[day]) {
-					// Get the uptime_value
-					var uptime_value = uptime_heatmap_array[day][hour];
-					// Select the right color from the legend
-					for(legend in uptime_heatmap_legend) {
-						if(Math.round(uptime_value)>=uptime_heatmap_legend[legend].min && Math.round(uptime_value)<=uptime_heatmap_legend[legend].max) {
-							// Add to the right dataset
-							uptime_heatmap_datasets[legend].data.push({x:hour, y:day, v:uptime_value});
-							break;
-						}
-					}
-				}
-			}
-			
-			uptime_heatmap_chart = new Chart(document.getElementById('uptime_heatmap_canvas'), {
-				type: 'matrix',
-				data: {
-					datasets: uptime_heatmap_datasets
-				},
-				options: {
-					maintainAspectRatio: false,
-					tooltips: {
-						displayColors: false,
-						callbacks: {
-							title: function(tooltipItems, data) {
-								var hovered_item = data.datasets[tooltipItems[0].datasetIndex].data[tooltipItems[0].index];
-								return hovered_item.y + ' between ' + ("0"+hovered_item.x).slice(-2) + ':00 and '+ (("0"+(parseInt(hovered_item.x)+1)).slice(-2)) + ':00';
-							},
-							label: function(tooltipItems, data) {
-								var hovered_item = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
-								return 'Uptime: ' + hovered_item.v + '%';
-							}
-						}
-					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							offset: true,
-							time: {
-								parser: 'HH',
-								unit: 'hour',
-								displayFormats: {
-									hour: 'HH'
-								}
-							},
-							ticks: {
-								padding: 10
-							},
-							gridLines: {
-								display: false,
-								drawBorder: false,
-								tickMarkLength: 0,
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Daytime'
-							}
-						}],
-						yAxes: [{
-							type: 'time',
-							offset: true,
-							time: {
-								unit: 'day',
-								parser: 'dddd',
-								displayFormats: {
-									day: 'ddd'
-								},
-								isoWeekday: 4
-							},
-							position: 'left',
-							ticks: {
-								reverse: true,
-								padding: 10
-							},
-							gridLines: {
-								display: false,
-								drawBorder: false,
-								tickMarkLength: 0
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Weekday'
-							}
-						}]
-					}
-				}
-			});
-		</script>
-
-		<!-- Average response time in last n months graph -->
-		<script type="text/javascript">
-			daily_response_time_chart = new Chart(document.getElementById('daily_response_time_canvas'), {
-				type: 'line',
-				data: {
-					labels: <?php echo json_encode(array_keys($daily_response_time_array)); ?>,
-					datasets: [{
-						data: <?php echo json_encode(array_values($daily_response_time_array)); ?>
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							scaleLabel: {
-								display: true,
-								labelString: 'Avg response time'
-							},
-							ticks: {
-								callback: function(value, index, values) {
-									return value + ' ms';
-								}
-							}
-						}],
-						xAxes: [{
-							type: 'time',
-							time: {
-								parser: 'YYYY-MM-DD',
-								unit: 'day',
-								displayFormats: {
-									day: 'DD/MM/YYYY'
-								},
-								tooltipFormat: 'dddd DD/MM/YYYY'
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Date'
-							},
-							ticks: {
-								min: '<?php echo max(date('Y-m-d', strtotime("-2 months")), $first_date); ?>' // Start zoomed in to show the last 2 months
-							}
-						}]
-					},
-					tooltips: {
-						displayColors: false,
-						callbacks: {
-							label: function(tooltipItems, data) {
-								return [
-									'Response time: ' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' ms',
-									'Click to see this date details'
-								];
-							}
-						}
-					},
-					plugins: {
-						zoom: {
-							pan: {
-								enabled: true,
-								mode: 'x',
-								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
-								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
-							},
-							zoom: {
-								enabled: true,
-								mode: 'x',
-								rangeMin: {x: <?php echo strtotime($first_date)*1000; ?>},
-								rangeMax: {x: <?php echo microtime(true)*1000; ?>}
-							}
-						}
-					}
-				}
-			});
 		
-			document.getElementById('daily_response_time_canvas').onclick = function (evt) {
-				var clicked_points = daily_response_time_chart.getElementAtEvent(evt);
-				if (clicked_points.length) {
-					detailed_view_change_date(daily_response_time_chart.data.labels[clicked_points[0]._index]);
-					$('html,body').animate({
-						'scrollTop':   $('#detailed_view_uptime').offset().top-56
-					}, 'slow');
-				}
-			};
-		</script>
-
-		<!-- Average response time heatmap -->
-		<script type="text/javascript">
-			// Heatmap array
-			response_time_heatmap_array = <?php echo json_encode($response_time_heatmap_array); ?>;
-
-			// Define the colors of the datasets and their range of values
-			response_time_heatmap_legend = [
-				{color:"#c70000", hover_color:"#b30000", min:15000, max:100000, label:">15s"},    // Red
-				{color:"#e87d00", hover_color:"#cc6d00", min:9000, max:14999,   label:"9-14,9s"}, // Orange
-				{color:"#f0ca0f", hover_color:"#d8b60e", min:6000, max:8999,    label:"6-8,9s"},  // Yellow
-				{color:"#8fda3e", hover_color:"#75c125", min:4000, max:5999,    label:"4-5,9s"},  // Light green
-				{color:"#00b300", hover_color:"#009900", min:3000, max:3999,    label:"3-3,9s"},  // Green
-				{color:"#008000", hover_color:"#006600", min:0000, max:2999,    label:"<3s"}      // Dark green
-			];
-			
-			// Inizialize datasets
-			response_time_heatmap_datasets = [];
-			for(i in response_time_heatmap_legend) {
-				response_time_heatmap_datasets.push({
-					data: [],
-					label: response_time_heatmap_legend[i].label,
-					backgroundColor: response_time_heatmap_legend[i].color,
-					hoverBackgroundColor: response_time_heatmap_legend[i].hover_color,
-					width: function(c) {
-						const a = c.chart.chartArea || {};
-						return (a.right - a.left) / 24 - 1;
-					},
-					height: function(c) {
-						const a = c.chart.chartArea || {};
-						return (a.bottom - a.top) / 7 - 1;
-					}
-				});
-			}
-
-			// Fill datasets with actual data
-			for(day in response_time_heatmap_array) {
-				for(hour in response_time_heatmap_array[day]) {
-					// Get the response_time_value
-					var response_time_value = response_time_heatmap_array[day][hour];
-					// Select the right color from the legend
-					for(legend in response_time_heatmap_legend) {
-						if(Math.round(response_time_value)>=response_time_heatmap_legend[legend].min && Math.round(response_time_value)<=response_time_heatmap_legend[legend].max) {
-							// Add to the right dataset
-							response_time_heatmap_datasets[legend].data.push({x:hour, y:day, v:response_time_value});
-							break;
-						}
-					}
-				}
-			}
-			
-			response_time_heatmap_chart = new Chart(document.getElementById('response_time_heatmap_canvas'), {
-				type: 'matrix',
-				data: {
-					datasets: response_time_heatmap_datasets
-				},
-				options: {
-					maintainAspectRatio: false,
-					tooltips: {
-						displayColors: false,
-						callbacks: {
-							title: function(tooltipItems, data) {
-								var hovered_item = data.datasets[tooltipItems[0].datasetIndex].data[tooltipItems[0].index];
-								return hovered_item.y + ' between ' + ("0"+hovered_item.x).slice(-2) + ':00 and '+ (("0"+(parseInt(hovered_item.x)+1)).slice(-2)) + ':00';
-							},
-							label: function(tooltipItems, data) {
-								var hovered_item = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
-								return 'Avg response time: ' + hovered_item.v + ' ms';
-							}
-						}
-					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							offset: true,
-							time: {
-								parser: 'HH',
-								unit: 'hour',
-								displayFormats: {
-									hour: 'HH'
-								}
-							},
-							ticks: {
-								padding: 10
-							},
-							gridLines: {
-								display: false,
-								drawBorder: false,
-								tickMarkLength: 0,
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Daytime'
-							}
-						}],
-						yAxes: [{
-							type: 'time',
-							offset: true,
-							time: {
-								unit: 'day',
-								parser: 'dddd',
-								displayFormats: {
-									day: 'ddd'
-								},
-								isoWeekday: 4
-							},
-							position: 'left',
-							ticks: {
-								reverse: true,
-								padding: 10
-							},
-							gridLines: {
-								display: false,
-								drawBorder: false,
-								tickMarkLength: 0
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Weekday'
-							}
-						}]
-					}
-				}
-			});
+			<!-- Daily uptime -->
+			chart_create_daily(
+				'daily_uptime_canvas',
+				<?php echo json_encode(array_keys($daily_uptime_array)); ?>,
+				<?php echo json_encode(array_values($daily_uptime_array)); ?>,
+				'Uptime',
+				'<?php echo max(date('Y-m-d', strtotime("-2 months")), $first_date); /* Starts zoomed in */ ?>',
+				100,
+				'%',
+				'Uptime: ',
+				'%',
+				<?php echo strtotime($first_date)*1000; ?>,
+				<?php echo microtime(true)*1000; ?>
+			);
+		
+			<!-- Uptime heatmap -->
+			chart_create_weekday_daytime_heatmap(
+				'uptime_heatmap_canvas',
+				<?php echo json_encode($uptime_heatmap_array); ?>,
+				[
+					{color:"#c70000", hover_color:"#b30000", min:00, max:50,  label: "<=50% uptime"},  // Red
+					{color:"#e87d00", hover_color:"#cc6d00", min:51, max:60,  label: "51-60% uptime"}, // Orange
+					{color:"#f0ca0f", hover_color:"#d8b60e", min:61, max:70,  label: "61-70% uptime"}, // Yellow
+					{color:"#8fda3e", hover_color:"#75c125", min:71, max:80,  label: "71-80% uptime"}, // Light green
+					{color:"#00b300", hover_color:"#009900", min:81, max:90,  label: "81-90% uptime"}, // Green
+					{color:"#008000", hover_color:"#006600", min:91, max:100, label: ">90% uptime"}    // Dark green
+				],
+				'Uptime: ',
+				'%'
+			);
+		
+			<!-- Daily response time -->
+			chart_create_daily(
+				'daily_response_time_canvas',
+				<?php echo json_encode(array_keys($daily_response_time_array)); ?>,
+				<?php echo json_encode(array_values($daily_response_time_array)); ?>,
+				'Avg response time',
+				'<?php echo max(date('Y-m-d', strtotime("-2 months")), $first_date); /* Starts zoomed in */ ?>',
+				undefined,
+				' ms',
+				'Response time: ',
+				' ms',
+				<?php echo strtotime($first_date)*1000; ?>,
+				<?php echo microtime(true)*1000; ?>
+			);
+		
+			<!-- Average response time heatmap -->
+			chart_create_weekday_daytime_heatmap(
+				'response_time_heatmap_canvas',
+				<?php echo json_encode($response_time_heatmap_array); ?>,
+				[
+					{color:"#c70000", hover_color:"#b30000", min:15000, max:100000, label:">15s"},    // Red
+					{color:"#e87d00", hover_color:"#cc6d00", min:9000, max:14999,   label:"9-14,9s"}, // Orange
+					{color:"#f0ca0f", hover_color:"#d8b60e", min:6000, max:8999,    label:"6-8,9s"},  // Yellow
+					{color:"#8fda3e", hover_color:"#75c125", min:4000, max:5999,    label:"4-5,9s"},  // Light green
+					{color:"#00b300", hover_color:"#009900", min:3000, max:3999,    label:"3-3,9s"},  // Green
+					{color:"#008000", hover_color:"#006600", min:0000, max:2999,    label:"<3s"}      // Dark green
+				],
+				'Avg response time: ',
+				' ms'
+			);
 		</script>
 
 		<!-- Detailed view calendar -->
@@ -886,49 +479,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 		<!-- Detailed view uptime graph -->
 		<script type="text/javascript">
-			detailed_view_uptime_chart = new Chart(document.getElementById('detailed_view_uptime_canvas'), {
-				type: 'doughnut',
-				data: {
-					labels: ['UP', 'DOWN'],
-					datasets: [{
-						data: [<?php echo $detailed_view_uptime[0]; ?>, <?php echo $detailed_view_uptime[1]; ?>],
-						backgroundColor: [
-							'green',
-							'red'
-						]
-					}]
-				},
-				options: {
-					legend: {
-						display: false
-					},
-					tooltips: {
-						callbacks: {
-							label: function(tooltipItems, data) {
-								return data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index] + ' times checked';
-							}
-						}
-					}
-				},
-				plugins: [{
-					beforeDraw: function (chart) {
-						var width = chart.chart.width,
-							height = chart.chart.height,
-							ctx = chart.chart.ctx;
-
-						ctx.restore();
-						ctx.font = (height / 150).toFixed(2) + "em sans-serif";
-						ctx.textBaseline = "middle";
-
-						var text = Math.round(100/(chart.data.datasets[0].data[0]+chart.data.datasets[0].data[1])*chart.data.datasets[0].data[0])+"%",
-							textX = Math.round((width - ctx.measureText(text).width) / 2),
-							textY = height / 2 - (chart.titleBlock.height - 3);
-
-						ctx.fillText(text, textX, textY);
-						ctx.save();
-					}
-				}]
-			});
+			detailed_view_uptime_chart = chart_create_up_down_donuts(
+				'detailed_view_uptime_canvas',
+				<?php echo $detailed_view_uptime[0]; ?>,
+				<?php echo $detailed_view_uptime[1]; ?>
+			);
 		</script>
 
 		<!-- Detailed view time graph -->
@@ -961,9 +516,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				},
 				options: {
 					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
+					legend: {display: false},
 					scales: {
 						yAxes: [{
 							scaleLabel: {
@@ -1021,7 +574,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							},
 							zoom: {
 								enabled: true,
-								mode: 'x',
+								mode: 'x'
 							}
 						}
 					}

@@ -1036,6 +1036,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			};
 
 			function detailed_view_time_chart_update() {
+				detailed_view_time_chart.resetZoom();
+				
 				detailed_view_time_chart_pointBackgroundColors.length = 0;
 
 				for (i = 0; i < detailed_view_time_chart.data.datasets[0].data.length; i++) {

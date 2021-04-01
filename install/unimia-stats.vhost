@@ -5,7 +5,7 @@
 #	- Custom 404 page
 
 # Cache zone
-fastcgi_cache_path /etc/nginx/cache levels=1:2 keys_zone=UNIMIA:100m inactive=8m;
+fastcgi_cache_path /etc/nginx/cache/unimia-stats levels=1:2 keys_zone=UNIMIA:100m inactive=8m;
 fastcgi_cache_key "$scheme$request_method$host$request_uri";
 
 # Redirect HTTP (port 80) to HTTPS (port 443)

@@ -202,9 +202,10 @@ if not is_up and which_request_to_save != 0:
 
 			// "CFU / Carriera" section
 			document.body.innerHTML = document.body.innerHTML.replace(/Dettaglio carriera ?- ?<\/strong>.+<\/p>/ig, 'Dettaglio carriera - </strong>REDACTED</p>');
-			document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\):<\/strong> ?(\d*)(\.\d+)?/ig, 'Esami registrati (in piano):</strong> REDACTED');
-			document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\):<\/strong> ?(\d*)(\.\d+)?/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
-			document.body.innerHTML = document.body.innerHTML.replace(/CFU totali \(esami e altre attività in piano e fuori piano\):<\/strong> ?(\d*)(\.\d+)?/ig, 'CFU totali (esami e altre attività in piano e fuori piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\): ?<\/strong> ?(\d*)(\.\d+)?/ig, 'Esami registrati (in piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\): ?<\/strong> ?(\d*)(\.\d+)?/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/Ultimo esame in piano registrato: ?<\/strong>[^<]+/ig, 'Ultimo esame in piano registrato: </strong>REDACTED');
+			document.body.innerHTML = document.body.innerHTML.replace(/CFU totali \(esami e altre attività in piano e fuori piano\): ?<\/strong> ?(\d*)(\.\d+)?/ig, 'CFU totali (esami e altre attività in piano e fuori piano):</strong> REDACTED');
 		""")
 		blocklist = os.getenv("WORD_BLOCKLIST").split(',')
 		for b in blocklist:

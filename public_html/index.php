@@ -225,7 +225,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- AVERAGE RESPONSE TIME -->
-			<h1 class="mt-5 mb-4 mb-sm-5 display-4">Average response time (when up)*</h1>
+			<h1 class="mt-5 mb-4 mb-sm-5 display-4">Average response time (when up) <a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS">*</a></h1>
 
 			<!-- Summary -->
 			<h2 id="response_time_summary" class="mt-4 mb-3 text-center">Summary</h2>
@@ -286,7 +286,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				<!-- Response time (avg, min, max) -->
 				<div class="col-md-6 col-lg-4">
 					<div class="d-flex flex-column h-100">
-						<h2 id="detailed_view_response_time" class="mb-4 mb-md-3">Response time on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?>*</span></h2>
+						<h2 id="detailed_view_response_time" class="mb-4 mb-md-3">
+							Response time on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?></span>
+							<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS">*</a>
+						</h2>
 						<div class="my-auto py-3">
 							<h4>Avg: </h4>
 							<h3 id="detailed_view_response_time_avg"><?php echo $detailed_view_response_time_avg; ?> ms</h3><br>
@@ -306,14 +309,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- Time graph -->
-			<h2 id="detailed_view_time_graph" class="mt-3 mb-4 mb-md-3 text-center">Data collected on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?>*</span></h2>
+			<h2 id="detailed_view_time_graph" class="mt-3 mb-4 mb-md-3 text-center">
+				Data collected on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?></span>
+				<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS">*</a>
+			</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the screenshots taken when Unimia was down</p>
 			<div style="height: 400px">
 				<canvas id="detailed_view_time_canvas"></canvas>
 			</div>
-
-			<!-- Clarifications -->
-			<p class="text-muted mt-4">*Response times include the time to login to the CAS</p>
 		</div>
 
 		<!-- Jquery -->
@@ -605,6 +608,13 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			}
 
 			detailed_view_time_chart_update();
+		</script>
+		
+		<!-- Load tooltips -->
+		<script type="text/javascript">
+			$(function () {
+				$('[data-toggle="tooltip"]').tooltip()
+			})
 		</script>
 
 		<!-- Loading screen -->

@@ -12,7 +12,7 @@ Live demo available at https://unimia.webctf.it/
 - It represents uptime percentages and response times through various types of charts (hourly during days, daily during weeks, in last n months etc)
 - Save HTML pages (in a private folder not reachable from the website container) for N days for each time it has found Unimia down (for debugging purposes and further analysis and improvements to the script)
 - Save screenshots showing what the page was like when Unimia was down and allow users to see them
-- Redact personal informations before to take screenshots using a two-pass system: first it eliminates certain elements based on their position on the page, and then iterating a words blacklist
+- Redact personal informations before to take screenshots using a two-pass system: first it eliminates certain elements based on their position on the page, and then iterating a words blocklist
 
 # Installation
 Prerequisites: Nginx (with virtualhosts already configured), Docker (remember to add your user to the docker group with `sudo groupadd docker; sudo usermod -aG docker $USER`), Docker-compose.

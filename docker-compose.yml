@@ -66,10 +66,10 @@ services:
           CAS_URL: 'https://cas.unimi.it/login'
           # This is the timeout used by the python script which check if unimia is up or down
           TIMEOUT: 65
-          # Replace here with a blacklist of words/phrases (case-insensitive and separed by commas) contained in Unimia which you want to be redacted before to take a screenshot
+          # Replace here with a blocklist of words/phrases (case-insensitive and separed by commas) contained in Unimia which you want to be redacted before to take a screenshot
           # (e.g. your name, surname, phone number, badge number ecc)
           # Please note that this is just an additional security rule. Internally the software already redact personal informations based on their position on the page.
-          WORD_BLACKLIST: 'john,doe,1234567890,123456,sicurezza dei sistemi e delle reti informatiche,l-31,f68,piazza del duomo,17,20121,milano,mi'
+          WORD_BLOCKLIST: 'john,doe,1234567890,123456,sicurezza dei sistemi e delle reti informatiche,l-31,f68,piazza del duomo,17,20121,milano,mi'
   mysql:
       restart: always
       image: mariadb

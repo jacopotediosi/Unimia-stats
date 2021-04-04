@@ -6,6 +6,14 @@ body {
 	padding-top: 56px;
 }
 
+/* Bootstrap custom sizes */
+.navbar {
+    padding: .5rem 1rem;
+}
+.h2, h2 {
+    font-size: 2rem;
+}
+
 /* Datepicker */
 .datepicker, .table-condensed {
 	width: 300px;
@@ -32,4 +40,17 @@ body {
 @media (max-width:500px) {
 	.github-corner:hover .octo-arm {animation:none}
 	.github-corner .octo-arm {animation:octocat-wave 560ms ease-in-out}
+}
+
+/* Bootstrap-Toggle IOS-like styling */
+.toggle.ios, .toggle-on.ios, .toggle-off.ios {
+	border-radius: 20rem;
+}
+.toggle.ios .toggle-handle {
+	border-radius: 20rem;
+}
+
+/* Dark datapicker */
+.datepicker_dark table tr td.day:hover, .datepicker_dark table tr td.focused, .datepicker_dark .datepicker-switch:hover, .datepicker_dark .next:hover, .datepicker_dark .prev:hover, .datepicker_dark tfoot tr th:hover, .datepicker_dark table tr td span.focused, .datepicker_dark table tr td span:hover {
+	background: #444;
 }

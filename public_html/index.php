@@ -109,14 +109,34 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<meta charset="UTF-8">
 		<title>Unimia stats</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="color-scheme" content="light dark">
 		<link rel="shortcut icon" href="favicon.ico">
-
-		<!-- Bootstrap CSS -->
+		
+		<!-- Bootstrap light theme CSS -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+		<!-- Bootstrap dark theme CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/darkly/bootstrap.min.css" integrity="sha512-A/WvCV75maYUI3F3yjeSqYg0dUIepPRx14Qw8EZjJ/udG5/s3uDWLHnm1FSbYzrJg4RLdAdEm/f6+1V6AxCBJQ==" crossorigin="anonymous" media="(prefers-color-scheme: dark)" id="bootstrap_dark_css">
 		<!-- Bootstrap datepicker CSS -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.standalone.min.css" integrity="sha512-p4vIrJ1mDmOVghNMM4YsWxm0ELMJ/T0IkdEvrkNHIcgFsSzDi/fV7YxzTzb3mnMvFPawuIyIrHcpxClauEfpQg==" crossorigin="anonymous">
-		<!-- Main theme -->
+		<!-- Bootstrap4-toggle CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-toggle/3.6.1/bootstrap4-toggle.min.css" integrity="sha512-EzrsULyNzUc4xnMaqTrB4EpGvudqpetxG/WNjCpG6ZyyAGxeB6OBF9o246+mwx3l/9Cn838iLIcrxpPHTiygAA==" crossorigin="anonymous" />
+		
+		<!-- Font-awesome CSS-->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+		
+		<!-- Main theme CSS -->
 		<link rel="stylesheet" href="/css/main.css">
+		
+		<!-- Initialize the theme setting if the user is visiting the site for the first time -->
+		<script type="text/javascript">
+		if (localStorage.getItem('theme') === null) {
+			if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				localStorage.setItem('theme', 'dark');
+			} else {
+				localStorage.setItem('theme', 'light');
+			}
+		}
+		</script>
 
 <?php // Google Analytics JS (only if env var GTAG_ID is defined)
 	$gtag_id = getenv('GTAG_ID');
@@ -140,7 +160,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 	<body>
 		<!-- Navbar -->
-		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+		<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
 			<a class="navbar-brand" href="#">Unimia stats</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
 				<span class="navbar-toggler-icon"></span>
@@ -189,6 +209,13 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							<a class="dropdown-item" href="#analysis_responsive_design">Responsive Design</a>
 							<a class="dropdown-item" href="#analysis_some_food_for_thought">Some food for thought</a>
 						</div>
+					</li>
+					<li class='nav-item'>
+						<span class='nav-link'>
+							<i class='fas fa-sun fa-lg mr-2' onclick="$('#darkmode_toggle').bootstrapToggle('off')"></i>
+							<input type='checkbox' id='darkmode_toggle' data-style='ios' data-on=' ' data-off=' ' data-onstyle='secondary' data-offstyle='secondary' data-size='xs'>
+							<i class='fas fa-moon fa-lg ml-2' onclick="$('#darkmode_toggle').bootstrapToggle('on')"></i>
+						</span>
 					</li>
 					<li class="nav-item">
 						<a href="https://github.com/jacopotediosi/Unimia-stats" class="github-corner ml-sm-2 ml-0 d-block" aria-label="View source on GitHub" title="View source on GitHub" target="_blank">
@@ -508,6 +535,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 		<!-- Bootstrap datepicker js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+		<!-- Bootstrap4-toogle js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-toggle/3.6.1/bootstrap4-toggle.min.js" integrity="sha512-bAjB1exAvX02w2izu+Oy4J96kEr1WOkG6nRRlCtOSQ0XujDtmAstq5ytbeIxZKuT9G+KzBmNq5d23D6bkGo8Kg==" crossorigin="anonymous"></script>
 		<!-- Chart.js (and its dependency Moment.js) -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
@@ -517,11 +546,29 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<!-- Chart.js Matrix Plugin -->
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@0.1.3/dist/chartjs-chart-matrix.min.js" integrity="sha256-w0NjVSRI+HwjqhuitUP0LW5ycKcCs7rMS6k8WHpdgmc=" crossorigin="anonymous"></script>
 		
-		<!-- Charts Constructors -->
-		<script src="/js/charts-constructors.js"></script>
+		<!-- Main js -->
+		<script src="/js/main.js"></script>
 
 		<!-- Week starts with Monday in all charts -->
 		<script type="text/javascript">moment.updateLocale('en', {week: {dow: 1}});</script>
+		
+		<!-- Darkmode toggle in navbar -->
+		<script type="text/javascript">
+			// Init toggle
+			$("#darkmode_toggle").bootstrapToggle();
+			// The default state should be aligned with the current theme
+			if (localStorage.getItem('theme')=='dark')
+				$('#darkmode_toggle').bootstrapToggle('on', true);
+			else
+				$('#darkmode_toggle').bootstrapToggle('off', true);
+			// Handle toggle changes
+			$('#darkmode_toggle').change(function() {
+				if ($('#darkmode_toggle').prop('checked'))
+					changeTheme('dark');
+				else
+					changeTheme('light');
+			});
+		</script>
 
 		<!-- Charts creation -->
 		<script type="text/javascript">	
@@ -808,5 +855,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				</div>
 			</div>
 		</div>
+		
+		<!-- Apply correct theme -->
+		<script type="text/javascript">
+			changeTheme(localStorage.getItem('theme'));
+		</script>
 	</body>
 </html>

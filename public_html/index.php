@@ -139,6 +139,12 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				localStorage.setItem('theme', 'light');
 			}
 		}
+		if (localStorage.getItem('theme') == 'light') {
+			document.getElementById("bootstrap_dark_css").disabled = true;
+			document.getElementById("main_dark_css").disabled = true;
+		}
+		document.getElementById("bootstrap_dark_css").removeAttribute("media");
+		document.getElementById("main_dark_css").removeAttribute("media");
 		</script>
 
 <?php // Google Analytics JS (only if env var GTAG_ID is defined)

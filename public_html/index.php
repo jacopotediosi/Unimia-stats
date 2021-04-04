@@ -126,6 +126,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		
 		<!-- Main theme CSS -->
 		<link rel="stylesheet" href="/css/main.css">
+		<!-- Dark theme CSS -->
+		<link rel="stylesheet" href="/css/main_dark.css" media="(prefers-color-scheme: dark)" id="main_dark_css">
 		
 		<!-- Initialize the theme setting if the user is visiting the site for the first time -->
 		<script type="text/javascript">

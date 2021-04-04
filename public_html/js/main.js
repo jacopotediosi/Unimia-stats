@@ -11,10 +11,10 @@ function chart_create_up_down_donuts(canvas_id, n_up, n_down) {
 			}]
 		},
 		options: {
-			defaultFontColor: localStorage.getItem('theme')==='dark' ? '#FFF':'#000',
+			defaultFontColor: localStorage.getItem('theme')==='dark' ? 'rgba(255, 255, 255, 0.87)':'#000',
 			elements: {
 				arc: {
-					borderColor: localStorage.getItem('theme')==='dark' ? '#222':'#FFF'
+					borderColor: localStorage.getItem('theme')==='dark' ? '#121212':'#FFF'
 				}
 			},
 			legend: {display: false},
@@ -253,36 +253,35 @@ function changeTheme(theme) {
 	if (theme=='dark') {
 		// Apply dark theme
 		
-		// Enable dark Bootstrap CSS
+		// Enable dark CSS
 		$("#bootstrap_dark_css").prop("disabled", false);
+		$("#main_dark_css").prop("disabled", false);
 		
 		// Charts colors
-		Chart.defaults.global.defaultFontColor="#FFF";
+		Chart.defaults.global.defaultFontColor="rgba(255, 255, 255, 0.87)";
 		Chart.helpers.each(Chart.instances, function(instance){
-			instance.chart.options.defaultFontColor               = '#FFF';
-			instance.chart.options.elements.arc.borderColor       = '#222';
-			instance.chart.options.elements.line.borderColor      = 'rgba(255,255,255,0.2)';
-			instance.chart.options.elements.line.backgroundColor  = 'rgba(255,255,255,0.2)';
-			instance.chart.options.elements.point.borderColor     = 'rgba(255,255,255,0.3)';
-			instance.chart.options.elements.point.backgroundColor = 'rgba(255,255,255,0.3)';
+			instance.chart.options.defaultFontColor               = 'rgba(255, 255, 255, 0.87)';
+			instance.chart.options.elements.arc.borderColor       = '#121212';
+			instance.chart.options.elements.line.borderColor      = 'rgba(255,255,255,0.1)';
+			instance.chart.options.elements.line.backgroundColor  = 'rgba(255,255,255,0.1)';
+			instance.chart.options.elements.point.borderColor     = 'rgba(255,255,255,0.2)';
+			instance.chart.options.elements.point.backgroundColor = 'rgba(255,255,255,0.2)';
 			if(instance.chart.options.scales) {
-				instance.chart.options.scales.xAxes[0].gridLines.color         = 'rgba(255,255,255,0.2)';
-				instance.chart.options.scales.xAxes[0].gridLines.zeroLineColor = 'rgba(255,255,255,0.35)';
-				instance.chart.options.scales.yAxes[0].gridLines.color         = 'rgba(255,255,255,0.2)';
-				instance.chart.options.scales.yAxes[0].gridLines.zeroLineColor = 'rgba(255,255,255,0.35)';
+				instance.chart.options.scales.xAxes[0].gridLines.color         = 'rgba(255,255,255,0.1)';
+				instance.chart.options.scales.xAxes[0].gridLines.zeroLineColor = 'rgba(255,255,255,0.25)';
+				instance.chart.options.scales.yAxes[0].gridLines.color         = 'rgba(255,255,255,0.1)';
+				instance.chart.options.scales.yAxes[0].gridLines.zeroLineColor = 'rgba(255,255,255,0.25)';
 			}
 		});
-		
-		// Datapicker
-		$(".datepicker").addClass("datepicker_dark");
 		
 		// Save new theme preference
 		localStorage.setItem('theme', 'dark');
 	} else {
 		// Apply light theme
 		
-		// Disable dark Bootstrap CSS
+		// Disable dark CSS
 		$("#bootstrap_dark_css").prop("disabled", true);
+		$("#main_dark_css").prop("disabled", true);
 		
 		// Charts colors
 		Chart.defaults.global.defaultFontColor="#000";
@@ -300,9 +299,6 @@ function changeTheme(theme) {
 				instance.chart.options.scales.yAxes[0].gridLines.zeroLineColor = 'rgba(0,0,0,0.25)';
 			}
 		});
-		
-		// Datapicker
-		$(".datepicker").removeClass("datepicker_dark");
 		
 		// Save new theme preference
 		localStorage.setItem('theme', 'light');

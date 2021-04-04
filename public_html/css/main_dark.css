@@ -1,0 +1,20 @@
+/* Custom body ajdustements */
+body {
+	background-color: #121212;
+	color: rgba(255, 255, 255, 0.87);
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+	font-weight: 400;
+}
+
+/* Decrease brightness and contrast of images a bit */
+body img {
+  filter: brightness(.75) contrast(1.4);
+}
+
+/* Datapicker */
+.datepicker table tr td.day:hover, .datepicker table tr td.focused, .datepicker .datepicker-switch:hover, .datepicker .next:hover, .datepicker .prev:hover, .datepicker tfoot tr th:hover, .datepicker table tr td span.focused, .datepicker table tr td span:hover {
+	background: #444;
+}

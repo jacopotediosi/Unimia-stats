@@ -49,8 +49,3 @@ body {
 .toggle.ios .toggle-handle {
 	border-radius: 20rem;
 }
-
-/* Dark datapicker */
-.datepicker_dark table tr td.day:hover, .datepicker_dark table tr td.focused, .datepicker_dark .datepicker-switch:hover, .datepicker_dark .next:hover, .datepicker_dark .prev:hover, .datepicker_dark tfoot tr th:hover, .datepicker_dark table tr td span.focused, .datepicker_dark table tr td span:hover {
-	background: #444;
-}

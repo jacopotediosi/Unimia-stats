@@ -130,8 +130,9 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 		<!-- Dark theme CSS -->
 		<link rel="stylesheet" href="/css/main_dark.css" media="(prefers-color-scheme: dark)" id="main_dark_css">
 		
-		<!-- Initialize the theme setting if the user is visiting the site for the first time -->
+		<!-- Initialize theme -->
 		<script type="text/javascript">
+		// Set preference in localstorage if user is visiting the site for the first time
 		if (localStorage.getItem('theme') === null) {
 			if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 				localStorage.setItem('theme', 'dark');
@@ -139,6 +140,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				localStorage.setItem('theme', 'light');
 			}
 		}
+		// Transfer the theme management to js and no longer to css (previously used to avoid FOUT)
 		if (localStorage.getItem('theme') == 'light') {
 			document.getElementById("bootstrap_dark_css").disabled = true;
 			document.getElementById("main_dark_css").disabled = true;

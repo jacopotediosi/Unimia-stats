@@ -104,13 +104,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 }
 ?>
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<title>Unimia stats</title>
+		<title>Unimia Stats</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="color-scheme" content="light dark">
 		<link rel="shortcut icon" href="favicon.ico">
+		<meta name="color-scheme" content="light dark">
+		<meta name="description" content="Unimia Stats is a tool to monitor status of unimia.unimi.it">
 		
 		<!-- Bootstrap light theme CSS -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
@@ -163,7 +164,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 	<body>
 		<!-- Navbar -->
 		<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
-			<a class="navbar-brand" href="#">Unimia stats</a>
+			<a class="navbar-brand" href="#">Unimia Stats</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
 				<span class="navbar-toggler-icon"></span>
 			</button>
@@ -220,7 +221,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 						</span>
 					</li>
 					<li class="nav-item">
-						<a href="https://github.com/jacopotediosi/Unimia-stats" class="github-corner ml-sm-2 ml-0 d-block" aria-label="View source on GitHub" title="View source on GitHub" target="_blank">
+						<a href="https://github.com/jacopotediosi/Unimia-stats" class="github-corner ml-sm-2 ml-0 d-block" aria-label="View source on GitHub" title="View source on GitHub" target="_blank" rel="noopener">
 							<!-- SVG made from Tim Holman, https://tholman.com/github-corners/ -->
 							<svg width="35" height="35" viewBox="115 50 95 90" aria-hidden="true">
 								<path d="M155.618 127.341C139.174 132.47 134.779 121.995 134.779 121.995C131.422 115.261 127.317 113.775 127.317 113.775C121.425 110.528 127.419 110.075 127.419 110.075C133.45 110.044 137.196 115.537 137.196 115.537C143.415 124.149 151.658 121.015 155.096 118.94" fill="currentColor" style="transform-origin: 149px 121px;" class="octo-arm"/>
@@ -272,7 +273,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			</div>
 
 			<!-- AVERAGE RESPONSE TIME -->
-			<h1 class="mt-5 mb-4 mb-sm-5 display-4">Average response time (when up) <a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS">*</a></h1>
+			<h1 class="mt-5 mb-4 mb-sm-5 display-4">Average response time (when up) <a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS" rel="nofollow">*</a></h1>
 
 			<!-- Summary -->
 			<h2 id="response_time_summary" class="mt-4 mb-3 text-center">Summary</h2>
@@ -335,7 +336,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 					<div class="d-flex flex-column h-100">
 						<h2 id="detailed_view_response_time" class="mb-4 mb-md-3">
 							Response time on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?></span>
-							<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS">*</a>
+							<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS" rel="nofollow">*</a>
 						</h2>
 						<div class="my-auto py-3">
 							<h4>Avg: </h4>
@@ -358,7 +359,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<!-- Time graph -->
 			<h2 id="detailed_view_time_graph" class="mt-3 mb-4 mb-md-3 text-center">
 				Data collected on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?></span>
-				<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS">*</a>
+				<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS" rel="nofollow">*</a>
 			</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the screenshots taken when Unimia was down</p>
 			<div style="height: 400px">
@@ -370,13 +371,13 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			
 			<!-- Disclaimer -->
 			<h2 id="analysis_disclaimer" class="mt-4 mb-3 text-center">Disclaimer</h2>
-			<p>Following informations are the result of <a href="https://en.wikipedia.org/wiki/Reverse_engineering" target="_blank">reverse engineering</a> and any user enabled to the platform (so any student) can discover and verify them independently. They are therefore to be considered public knowledge and their disclosure is totally legitimate. Each issue listed below has already been notified for over a year to the platform owners, who have never responded to the numerous reports.</p>
+			<p>Following informations are the result of <a href="https://en.wikipedia.org/wiki/Reverse_engineering" target="_blank" rel="noopener">reverse engineering</a> and any user enabled to the platform (so any student) can discover and verify them independently. They are therefore to be considered public knowledge and their disclosure is totally legitimate. Each issue listed below has already been notified for over a year to the platform owners, who have never responded to the numerous reports.</p>
 			
 			<!-- Introduction -->
 			<h2 id="analysis_introduction" class="mt-4 mb-3 text-center">Introduction</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_home_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_home_1.jpg" class="img-fluid" alt="Unimia homepage screenshot"></p>
 				</div>
 				<div class="col-xl align-self-center">
 					<blockquote>
@@ -384,10 +385,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							&ldquo;Unimia is a web area reserved for registered students and graduates of the University of Milan, which brings together individual information and online services: a gateway to administrative and career informations, teaching and secretarial services, academic deadlines&rdquo;
 						</p>
 						<footer class="blockquote-footer">
-							From the <a href="https://www.unimi.it/it/studiare/servizi-gli-studenti/servizi-tecnologici-e-online/unimia-il-portale-degli-studenti" target="_blank">University of Milan website</a>
+							From the <a href="https://www.unimi.it/it/studiare/servizi-gli-studenti/servizi-tecnologici-e-online/unimia-il-portale-degli-studenti" target="_blank" rel="noopener">University of Milan website</a>
 						</footer>
 					</blockquote>
-					<p>Basically <a href="http://unimia.unimi.it" target="_blank">Unimia</a> is an obsolete, bug-ridden and almost unusable webapp that all Unimi students (<a href="https://work.unimi.it/appelli/Iscritti-anno_2020_21.pdf" target="_blank">nearly 63 000</a>) must use every day to manage their university careers and most of the services offered by the university.</p>
+					<p>Basically <a href="http://unimia.unimi.it" target="_blank" rel="noopener">Unimia</a> is an obsolete, bug-ridden and almost unusable webapp that all Unimi students (<a href="https://work.unimi.it/appelli/Iscritti-anno_2020_21.pdf" target="_blank" rel="noopener">nearly 63 000</a>) must use every day to manage their university careers and most of the services offered by the university.</p>
 					<p>Any platform malfunction can prevent students from booking exams, paying fees, blocking a lost badge, submitting their study plan, creating self-certifications and accessing their informations.</p>
 					<p>Any platform security problem, instead, can put at risk students personal data (including addresses, private phone numbers, photos, identity documents) and details on their university career and administrative situation.</p>
 					<p>Now imagine being a student. Today is the deadline to book an exam and you're late. Unimia is down. It's a big disservice!<br>Or again, imagine what a problem would be if someone could reject the result of an exam in which you were awarded the maximum grade!</p>
@@ -398,13 +399,13 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_an_eol_product" class="mt-4 mb-3 text-center">An EOL product</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_source_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_source_1.jpg" class="img-fluid" alt="HTML comments in Unimia sources"></p>
 				</div>
 				<div class="col-xl align-self-center">
 					<p>The last line in the HTML response of any Unimia page is a comment that contains "Portal Version: 10.3.3.379633", which indicates that the site was create using WebCenter Interaction (below we will call it "WIB").</p>
-					<p>WIB is an EOL (End of Life) Oracle product, released in 2008. Version 10.3.3.379633, released on 08/12/2011, is the last and latest version of WIB. WIB Premier Support ended in 2015 and its Extended Support ended in 2017 (source: page 30/70 of <a href="http://www.oracle.com/us/support/library/lifetime-support-middleware-069163.pdf" target="_blank">this document</a>).<br>
+					<p>WIB is an EOL (End of Life) Oracle product, released in 2008. Version 10.3.3.379633, released on 08/12/2011, is the last and latest version of WIB. WIB Premier Support ended in 2015 and its Extended Support ended in 2017 (source: page 30/70 of <a href="http://www.oracle.com/us/support/library/lifetime-support-middleware-069163.pdf" target="_blank" rel="noopener">this document</a>).<br>
 					This means that Oracle no longer releases updates, not even security updates to fix critical vulnerabilities, and suggests to migrate to the new equivalent software called "Oracle WebCenter Portal".</p>
-					<p>Unimia <a href="https://web.archive.org/web/20101015000000*/unimia.unimi.it" target="_blank">first appeared on Archive.org</a> on 22 October 2010, less than a year before WIB became EOL.</p>
+					<p>Unimia <a href="https://web.archive.org/web/20101015000000*/unimia.unimi.it" target="_blank" rel="noopener">first appeared on Archive.org</a> on 22 October 2010, less than a year before WIB became EOL.</p>
 				</div>
 			</div>
 			
@@ -412,10 +413,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_without_https" class="mt-4 mb-3 text-center">Without HTTPS</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_https_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_https_1.jpg" class="img-fluid" alt="Unimia doesn't use HTTPS"></p>
 				</div>
 				<div class="col-xl align-self-center">
-					<p>Even if authentication is done via <a href="https://www.apereo.org/projects/cas" target="_blank">CAS</a>, which does use HTTPS, Unimia only transmits using HTTP.</p>
+					<p>Even if authentication is done via <a href="https://www.apereo.org/projects/cas" target="_blank" rel="noopener">CAS</a>, which does use HTTPS, Unimia only transmits using HTTP.</p>
 					<p>So, fortunately, your credentials are transmitted safely, but the same does not apply to all the other data.</p>
 					<p>Data sent directly to Unimia transits in cleartext around the network and therefore risks being intercepted both by your ISP and by malicious users on your same LAN (making the webapp unsafe to use from public wifi, like the one offered by the university).</p>
 				</div>
@@ -425,12 +426,12 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_cookies_without_httponly" class="mt-4 mb-3 text-center">Cookies without HttpOnly</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_cookies_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_cookies_1.jpg" class="img-fluid" alt="Unimia cookies without Httponly flag"></p>
 				</div>
 				<div class="col-xl align-self-center">
 					<p>The frontend is built with Apache installed on a CentOS machine, which acts as a reverse proxy to a Tomcat backend. The infrastructure probably also uses Varnish as a cache system.</p>
-					<p>this means that if there were <a href="https://en.wikipedia.org/wiki/Cross-site_scripting" target="_blank">XSS (Cross-Site Scripting)</a> vulnerabilities on the webapp (some were found, but it is not the purpose of this site to disclose them) it would be quite easy to steal the sessions of other users.</p>
-					<p>The lack of the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank">X-Frame-Options header</a>, as well as opening the way to clickjacking attacks, makes XSS more subtle and quiet possible.</p>
+					<p>this means that if there were <a href="https://en.wikipedia.org/wiki/Cross-site_scripting" target="_blank" rel="noopener">XSS (Cross-Site Scripting)</a> vulnerabilities on the webapp (some were found, but it is not the purpose of this site to disclose them) it would be quite easy to steal the sessions of other users.</p>
+					<p>The lack of the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank" rel="noopener">X-Frame-Options header</a>, as well as opening the way to clickjacking attacks, makes XSS more subtle and quiet possible.</p>
 				</div>
 			</div>
 			
@@ -438,11 +439,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_public_exploits" class="mt-4 mb-3 text-center">Public exploits</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_cve_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_cve_1.jpg" class="img-fluid" alt="Unimia public CVEs stats"></p>
 				</div>
 				<div class="col-xl align-self-center">
-					<p>At the end of 2018 the PaloAlto Networks Vulnerability Researcher Ben Nott found various vulnerabilities in WIB, for which MITRE assigned <a href="https://www.cvedetails.com/vulnerability-list/vendor_id-93/product_id-50217/Oracle-Webcenter-Interaction.html" target="_blank">8 CVEs</a>.</p>
-					<p>Oracle refused to patch them and <a href="https://github.com/xdrr/vulnerability-research/tree/master/webapp/oracle/webcenter/interaction/2018-06-multiple" target="_blank">the PoCs are publicly available</a>.</p>
+					<p>At the end of 2018 the PaloAlto Networks Vulnerability Researcher Ben Nott found various vulnerabilities in WIB, for which MITRE assigned <a href="https://www.cvedetails.com/vulnerability-list/vendor_id-93/product_id-50217/Oracle-Webcenter-Interaction.html" target="_blank" rel="noopener">8 CVEs</a>.</p>
+					<p>Oracle refused to patch them and <a href="https://github.com/xdrr/vulnerability-research/tree/master/webapp/oracle/webcenter/interaction/2018-06-multiple" target="_blank" rel="noopener">the PoCs are publicly available</a>.</p>
 					<p>These vulnerabilities can be used in attacks ranging from username enumeration to XSS, CSRF and DoS.</p>
 					<p>Being a niche product and now in disuse, it cannot be excluded that there are private or undiscovered vulnerabilities due to a lack of interested researchers.</p>
 				</div>
@@ -452,11 +453,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_directory_listing" class="mt-4 mb-3 text-center">Directory Listing</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_dirlist_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_dirlist_1.jpg" class="img-fluid" alt="Directory listing is enabled on Unimia"></p>
 				</div>
 				<div class="col-xl align-self-center">
 					<p>Directory Listing is enabled in the server config and HTML sources leak some interesting path.</p>
-					<p>For example at <a href="http://unimia.unimi.it/portal/server.pt/gateway/PTARGS_0_0_227_207_0_43/" target="_blank">this link</a> you can find an old forgotten backup tar, containing some portlets source codes.</p>
+					<p>For example at <a href="http://unimia.unimi.it/portal/server.pt/gateway/PTARGS_0_0_227_207_0_43/" target="_blank" rel="noopener">this link</a> you can find an old forgotten backup tar, containing some portlets source codes.</p>
 				</div>
 			</div>
 			
@@ -464,11 +465,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_stacktrace_enabled" class="mt-4 mb-3 text-center">Stacktrace enabled</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_stacktrace_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_stacktrace_1.jpg" class="img-fluid" alt="Screenshot of Unimia showing a stacktrace"></p>
 				</div>
 				<div class="col-xl align-self-center">
 					<p>Portlets are set up to show detailed error messages when problems occur, including stacktraces and lines of code that sometimes leak important informations such as the structure of the backend database tables.</p>
-					<p>Error messages are so frequent that they are considered "normal" by users and sometimes they have become a viral meme on Instagram (examples <a href="https://www.instagram.com/p/CL1PwtmDHjV/" target="_blank">here</a>, <a href="https://www.instagram.com/p/B7WcTwyinkJ/" target="_blank">here</a>, <a href="https://www.instagram.com/p/B-eo2ChHkzh/" target="_blank">here</a>, <a href="https://www.instagram.com/p/CH2zG9QhN7_/" target="_blank">here</a>, <a href="https://www.instagram.com/p/CHAuX97KCZN/" target="_blank">here</a>, <a href="https://www.instagram.com/p/CB3usUZHVNs/" target="_blank">here</a>, <a href="https://www.instagram.com/p/CBYmY9SnqcU/" target="_blank">here</a>, <a href="https://www.instagram.com/p/B99oaSfnsQu/" target="_blank"></a>...) and other social networks used by students.</p>
+					<p>Error messages are so frequent that they are considered "normal" by users and sometimes they have become a viral meme on Instagram (examples <a href="https://www.instagram.com/p/CL1PwtmDHjV/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/B7WcTwyinkJ/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/B-eo2ChHkzh/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CH2zG9QhN7_/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CHAuX97KCZN/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CB3usUZHVNs/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CBYmY9SnqcU/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/B99oaSfnsQu/" target="_blank" rel="noopener">here</a>...) and other social networks used by students.</p>
 				</div>
 			</div>
 			
@@ -476,10 +477,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_cas_cookies" class="mt-4 mb-3 text-center">CAS cookies</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_cookies_2.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_cookies_2.jpg" class="img-fluid" alt="CAS cookies are visible by all UniMi subdomains"></p>
 				</div>
 				<div class="col-xl align-self-center">
-					<p>The "CASTGC" (containing the TGT of the CAS) and "arielauth" cookies are set to be visible by all UniMI subdomains. Unimi has tens of thousands of subdomains, including those of the <a href="https://work.unimi.it/servizi/servizi_tec/1262.htm" target="_blank">hosting service that any teacher/researcher can activate</a> and including the addresses of the DNS reverse lookups of any device connected to the University Network (yes, most of the LAN segments don't use NAT and end up on public addresses accessible from the web.).</p>
+					<p>The "CASTGC" (containing the TGT of the CAS) and "arielauth" cookies are set to be visible by all UniMI subdomains. Unimi has tens of thousands of subdomains, including those of the <a href="https://work.unimi.it/servizi/servizi_tec/1262.htm" target="_blank" rel="noopener">hosting service that any teacher/researcher can activate</a> and including the addresses of the DNS reverse lookups of any device connected to the University Network (yes, most of the LAN segments don't use NAT and end up on public addresses accessible from the web.).</p>
 					<p>This means that any unimi subdomain being compromised or run by an disgruntled employee is theoretically capable of taking over their visitors CAS session.</p>
 				</div>
 			</div>
@@ -488,10 +489,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_admin_folders" class="mt-4 mb-3 text-center">Admin folders</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_admin_folders_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_admin_folders_1.jpg" class="img-fluid" alt='Unimia "secret" admin folders'></p>
 				</div>
 				<div class="col-xl align-self-center">
-					<p>By accessing <a href="http://unimia.unimi.it/portal/server.pt?open=space&name=CommunitySelection&control=EditorStart&editorType=1&parentid=40&parentname=CommunityPage" target="_blank">this link</a> and clicking on "Sfoglia tutte le cartelle" you can browse a list of internal paths that in theory only platform owners should be able to see.</p>
+					<p>By accessing <a href="http://unimia.unimi.it/portal/server.pt?open=space&name=CommunitySelection&control=EditorStart&editorType=1&parentid=40&parentname=CommunityPage" target="_blank" rel="noopener">this link</a> and clicking on "Sfoglia tutte le cartelle" you can browse a list of internal paths that in theory only platform owners should be able to see.</p>
 					<p>What a strange bug!</p>
 				</div>
 			</div>
@@ -499,7 +500,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<!-- SLA -->
 			<h2 id="analysis_sla" class="mt-4 mb-3 text-center">Service Level Agreement</h2>
 			<p>The main reason why Unimia Stats exists is to monitor Unimia and understand if the service actually works as it is supposed to.</p>
-			<p>However, not everyone knows of the existence of a document called "Carta dei servizi", in which Unimi ICT offices undertake to respect certain quality levels. The latest version, signed in February 2021, is available at <a href="https://www.unimi.it/sites/default/files/2021-02/Direzione%20ICT%20-%20Feb%202021_0.pdf" target="_blank">this address</a>. The parameters that Unimi uses to measure the quality of Unimia's service are explained on page 8/12 of the document.</p>
+			<p>However, not everyone knows of the existence of a document called "Carta dei servizi", in which Unimi ICT offices undertake to respect certain quality levels. The latest version, signed in February 2021, is available at <a href="https://www.unimi.it/sites/default/files/2021-02/Direzione%20ICT%20-%20Feb%202021_0.pdf" target="_blank" rel="noopener">this address</a>. The parameters that Unimi uses to measure the quality of Unimia's service are explained on page 8/12 of the document.</p>
 			<p>In particular the "Effectiveness" indicator says that "the ratio between the number of page views indicated by Google Analytics and the number of errors reported (automatically by SiteImprove and Google Analytics or manually via email by users) must be at least 98%". Two questions must be asked at this point: is it reasonable to compare two things that have nothing to do with each other such as the number of page views and the number of errors reported by users? Google Analytics and SiteImprove are tools for optimizing SEO and site accessibility, but how do they detect if the site actually shows usable contents instead of error messages during a day?</p>
 			<p>The "Continuity" indicator mentions that "Unimia must be usable, except for malfunctions not attributable to Unimi, 365 days a year 23 hours a day". That would be 95.83% of annual uptime, while the average that Unimia Stats usually detects is around 88%.</p>
 			
@@ -508,10 +509,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h2 id="analysis_responsive_design" class="mt-4 mb-3 text-center">Responsive Design</h2>
 			<div class="row">
 				<div class="col-xl-4 align-self-center text-center">
-					<p><img src="/img/unimia_responsive_1.jpg" class="img-fluid"></p>
+					<p><img src="/img/unimia_responsive_1.jpg" class="img-fluid" alt="Unimia new unreleased responsive gui"></p>
 				</div>
 				<div class="col-xl align-self-center">
-					<p>At <a href="https://form.agid.gov.it/view/f872b567-dd33-4b8d-a9d9-3dafeecd435d/" target="_blank">this link</a> you can view the Unimia accessibility declaration that Unimi sent to the Agency for Digital Italy (AGID).</p>
+					<p>At <a href="https://form.agid.gov.it/view/f872b567-dd33-4b8d-a9d9-3dafeecd435d/" target="_blank" rel="noopener">this link</a> you can view the Unimia accessibility declaration that Unimi sent to the Agency for Digital Italy (AGID).</p>
 					<p>In summary, the site is currently not responsive nor does it respect some good accessibility standards.</p>
 					<p>On the server there are some hidden stylesheets, probably under development, which once activated make Unimia responsive on mobile devices. The graphics would look similar to the one shown in the attached photo.</p>
 				</div>

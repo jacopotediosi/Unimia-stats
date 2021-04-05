@@ -140,6 +140,8 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				localStorage.setItem('theme', 'light');
 			}
 		}
+		// Inform the browser about the user preference
+		document.getElementsByTagName('meta')["color-scheme"].content = localStorage.getItem('theme');
 		// Transfer the theme management to js and no longer to css (previously used to avoid FOUT)
 		if (localStorage.getItem('theme') == 'light') {
 			document.getElementById("bootstrap_dark_css").disabled = true;

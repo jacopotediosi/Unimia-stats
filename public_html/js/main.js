@@ -252,6 +252,7 @@ function chart_plugin_percentage_in_donut_hole(chart) {
 function changeTheme(theme) {
 	if (theme=='dark') {
 		// Apply dark theme
+		$('head meta[name=color-scheme]').attr('content', 'dark');
 		
 		// Enable dark CSS
 		$("#bootstrap_dark_css").prop("disabled", false);
@@ -278,6 +279,7 @@ function changeTheme(theme) {
 		localStorage.setItem('theme', 'dark');
 	} else {
 		// Apply light theme
+		$('head meta[name=color-scheme]').attr('content', 'light');
 		
 		// Disable dark CSS
 		$("#bootstrap_dark_css").prop("disabled", true);

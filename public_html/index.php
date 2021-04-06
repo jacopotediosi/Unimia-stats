@@ -663,6 +663,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 		<!-- Detailed view calendar -->
 		<script type="text/javascript">
+			// Initialize datapicker
 			$('#detailed_view_calendar').datepicker({
 				startDate: "<?php echo $first_date; ?>",
 				endDate: "<?php echo date('Y-m-d'); ?>",
@@ -670,55 +671,16 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				todayHighlight: true,
 				weekStart: 1
 			});
+			
+			// Select today on datapicker
 			$("#detailed_view_calendar").datepicker("update", "<?php echo date('Y-m-d'); ?>");
 
-			function detailed_view_change_date(date) {
-				// Start the loading animation
-				$('#loading_screen').fadeIn();
-
-				// Start ajax request
-				$.get("ajax.php?operation=detailed_view&date="+date, function(data) {
-					// Parse data
-					var data = data["data"];
-
-					// Update uptime chart
-					detailed_view_uptime_chart.data.datasets[0].data = data.uptime;
-					detailed_view_uptime_chart.update();
-
-					// Update response times
-					$("#detailed_view_response_time_avg").text(data.response_avg);
-					$("#detailed_view_response_time_min").text(data.response_min);
-					$("#detailed_view_response_time_max").text(data.response_max);
-
-					// Update time chart
-					detailed_view_time_chart.data.labels = data.time_graph_labels;
-					detailed_view_time_chart.data.datasets[0].data = data.time_graph_data;
-					detailed_view_time_chart.data.datasets[0].reason = data.time_graph_reason;
-					detailed_view_time_chart.data.datasets[0].screenshot = data.time_graph_screenshot;
-					detailed_view_time_chart_update();
-
-					// Update date in all h2 titles
-					$(".detailed_view_selected_date").text(date);
-
-					// Update the datapicker
-					$("#detailed_view_calendar").datepicker("update", date);
-
-					// Stop the loading animation
-					$('#loading_screen').fadeOut();
-				});
-			}
-			
+			// Datapicker changeDate handler
 			$('#detailed_view_calendar').datepicker().on("changeDate", function(e) {
-				function pad(str, max) {
-					str = str.toString();
-					return str.length < max ? pad("0" + str, max) : str;
-				}
-
 				var year  = e.date.getFullYear();
-				var month = pad(e.date.getMonth()+1, 2);
-				var day   = pad(e.date.getDate(), 2);
+				var month = ( "0" + (e.date.getMonth()+1) ).slice(-2);
+				var day   = ( "0" + e.date.getDate() ).slice(-2);
 				var date  = year + '-' + month + '-' + day;
-
 				detailed_view_change_date(date);
 			});
 		</script>

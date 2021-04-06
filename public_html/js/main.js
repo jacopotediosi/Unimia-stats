@@ -229,6 +229,8 @@ function chart_create_daily(canvas_id, labels, data, y_labelString, x_ticks_min,
 	return new_chart;
 }
 
+/* CHARTS PLUGINS */
+
 function chart_plugin_percentage_in_donut_hole(chart) {
 	/* Usage: beforeDraw: function(chart) {chart_plugin_percentage_in_donut_hole(chart);} */
 	var width = chart.chart.width,
@@ -246,6 +248,54 @@ function chart_plugin_percentage_in_donut_hole(chart) {
 
 	ctx.fillText(text, textX, textY);
 	ctx.save();
+}
+
+/* COMMON FUNCTIONS */
+
+function start_loading_screen() {
+	$('#loading_screen').fadeIn();
+}
+
+function stop_loading_screen() {
+	$('#loading_screen').fadeOut();
+}
+
+/* CHARTS AJAX UPDATE HANDLERS */
+
+function detailed_view_change_date(date) {
+	// Start the loading animation
+	start_loading_screen();
+
+	// Start ajax request
+	$.get("ajax.php?operation=detailed_view&date="+date, function(data) {
+		// Parse data
+		var data = data["data"];
+
+		// Update uptime chart
+		detailed_view_uptime_chart.data.datasets[0].data = data.uptime;
+		detailed_view_uptime_chart.update();
+
+		// Update response times
+		$("#detailed_view_response_time_avg").text(data.response_avg);
+		$("#detailed_view_response_time_min").text(data.response_min);
+		$("#detailed_view_response_time_max").text(data.response_max);
+
+		// Update time chart
+		detailed_view_time_chart.data.labels                 = data.time_graph_labels;
+		detailed_view_time_chart.data.datasets[0].data       = data.time_graph_data;
+		detailed_view_time_chart.data.datasets[0].reason     = data.time_graph_reason;
+		detailed_view_time_chart.data.datasets[0].screenshot = data.time_graph_screenshot;
+		detailed_view_time_chart_update();
+
+		// Update date in all h2 titles
+		$(".detailed_view_selected_date").text(date);
+
+		// Update the datapicker
+		$("#detailed_view_calendar").datepicker("update", date);
+
+		// Stop the loading animation
+		stop_loading_screen();
+	});
 }
 
 /* THEME FUNCTIONS */

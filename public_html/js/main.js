@@ -216,7 +216,7 @@ function chart_create_daily(canvas_id, labels, data, y_labelString, x_ticks_min,
 		}
 	});
 	
-	document.getElementById(canvas_id).onclick = function (evt) {
+	$(canvas_id).click(function(evt) {
 		var clicked_points = new_chart.getElementAtEvent(evt);
 		if (clicked_points.length) {
 			detailed_view_change_date(new_chart.data.labels[clicked_points[0]._index]);
@@ -224,7 +224,7 @@ function chart_create_daily(canvas_id, labels, data, y_labelString, x_ticks_min,
 				'scrollTop':   $('#detailed_view_uptime').offset().top-56
 			}, 'slow');
 		}
-	};
+	});
 	
 	return new_chart;
 }
@@ -260,7 +260,7 @@ function stop_loading_screen() {
 	$('#loading_screen').fadeOut();
 }
 
-/* CHARTS AJAX UPDATE HANDLERS */
+/* CHARTS CUSTOM UPDATE HANDLERS */
 
 function detailed_view_change_date(date) {
 	// Start the loading animation
@@ -281,17 +281,17 @@ function detailed_view_change_date(date) {
 		$("#detailed_view_response_time_max").text(data.response_max);
 
 		// Update time chart
-		detailed_view_time_chart.data.labels                 = data.time_graph_labels;
-		detailed_view_time_chart.data.datasets[0].data       = data.time_graph_data;
-		detailed_view_time_chart.data.datasets[0].reason     = data.time_graph_reason;
-		detailed_view_time_chart.data.datasets[0].screenshot = data.time_graph_screenshot;
-		detailed_view_time_chart_update();
+		detailed_view_timeline_chart.data.labels                 = data.time_graph_labels;
+		detailed_view_timeline_chart.data.datasets[0].data       = data.time_graph_data;
+		detailed_view_timeline_chart.data.datasets[0].reason     = data.time_graph_reason;
+		detailed_view_timeline_chart.data.datasets[0].screenshot = data.time_graph_screenshot;
+		detailed_view_timeline_chart_update();
 
 		// Update date in all h2 titles
 		$(".detailed_view_selected_date").text(date);
 
 		// Update the datapicker
-		$("#detailed_view_calendar").datepicker("update", date);
+		$("#detailed_view_datepicker").datepicker("update", date);
 
 		// Stop the loading animation
 		stop_loading_screen();
@@ -299,6 +299,7 @@ function detailed_view_change_date(date) {
 }
 
 /* THEME FUNCTIONS */
+
 function changeTheme(theme) {
 	if (theme=='dark') {
 		// Apply dark theme

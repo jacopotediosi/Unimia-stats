@@ -93,11 +93,11 @@ $detailed_view_response_time_avg = (int) $detailed_view_response_time["avg"];
 $detailed_view_response_time_min = (int) $detailed_view_response_time["min"];
 $detailed_view_response_time_max = (int) $detailed_view_response_time["max"];
 
-// Detailed view time graph
-$detailed_view_time = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') AS time, response_time, reason FROM stats WHERE date_datetime = CURDATE()");
-$detailed_view_time_array = [];
-while ($row = mysqli_fetch_assoc($detailed_view_time)) {
-	$detailed_view_time_array[$row['time']] = [
+// Detailed view timeline
+$detailed_view_timeline = $db->query("SELECT DATE_FORMAT(datetime, '%H:%i:%s') AS time, response_time, reason FROM stats WHERE date_datetime = CURDATE()");
+$detailed_view_timeline_array = [];
+while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
+	$detailed_view_timeline_array[$row['time']] = [
 		'response_time' => (int) $row['response_time'],
 		'reason'        => utf8_encode($row['reason'])
 	];
@@ -202,7 +202,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 							<a class="dropdown-item" href="#detailed_view_pick_date">Pick a date</a>
 							<a class="dropdown-item" href="#detailed_view_uptime">Average uptime on selected date</a>
 							<a class="dropdown-item" href="#detailed_view_response_time">Response time on selected date</a>
-							<a class="dropdown-item" href="#detailed_view_time_graph">Data collected on selected date</a>
+							<a class="dropdown-item" href="#detailed_view_timeline">Data collected on selected date</a>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
@@ -323,12 +323,12 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 			<h1 class="mt-5 mb-5 display-4">Detailed view</h1>
 
 			<div class="row text-center mb-4">
-				<!-- Calendar -->
+				<!-- Datepicker -->
 				<div class="col-lg-4 mb-4 mb-lg-0">
 					<div class="d-flex flex-column h-100">
 						<h2 id="detailed_view_pick_date" class="mb-4 mb-md-3">Pick a date</h2>
 						<div class="d-flex flex-column h-100">
-							<div id="detailed_view_calendar" class="d-inline-block mx-auto"></div>
+							<div id="detailed_view_datepicker" class="d-inline-block mx-auto"></div>
 						</div>
 					</div>
 				</div>
@@ -366,14 +366,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				</div>
 			</div>
 
-			<!-- Time graph -->
-			<h2 id="detailed_view_time_graph" class="mt-3 mb-4 mb-md-3 text-center">
+			<!-- Timeline -->
+			<h2 id="detailed_view_timeline" class="mt-3 mb-4 mb-md-3 text-center">
 				Data collected on <span class="text-nowrap detailed_view_selected_date"><?php echo date('Y-m-d'); ?></span>
 				<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="Response times include the time to login to the CAS" rel="nofollow">*</a>
 			</h2>
 			<p class="text-center text-muted mt-2">By clicking on the graph points you can see the screenshots taken when Unimia was down</p>
 			<div style="height: 400px">
-				<canvas id="detailed_view_time_canvas"></canvas>
+				<canvas id="detailed_view_timeline_canvas"></canvas>
 			</div>
 			
 			<!-- UNIMIA ANALYSIS -->
@@ -585,7 +585,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 
 		<!-- Charts creation -->
 		<script type="text/javascript">	
-			<!-- Uptime donut charts -->
+			/* Uptime donut charts */
 			var chart_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
 			var chart_datas = [
 				[<?php echo $uptime_today[0]; ?>, <?php echo $uptime_today[1]; ?>],
@@ -593,12 +593,11 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				[<?php echo $uptime_month[0]; ?>, <?php echo $uptime_month[1]; ?>],
 				[<?php echo $uptime_all[0]; ?>, <?php echo $uptime_all[1]; ?>]
 			];
-
 			for (var i = 0; i < 4; i++) {
 				chart_create_up_down_donuts(chart_ids[i], chart_datas[i][0], chart_datas[i][1]);
 			}
 		
-			<!-- Daily uptime -->
+			/* Daily uptime */
 			chart_create_daily(
 				'daily_uptime_canvas',
 				<?php echo json_encode(array_keys($daily_uptime_array)); ?>,
@@ -613,7 +612,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				<?php echo microtime(true)*1000; ?>
 			);
 		
-			<!-- Uptime heatmap -->
+			/* Uptime heatmap */
 			chart_create_weekday_daytime_heatmap(
 				'uptime_heatmap_canvas',
 				<?php echo json_encode($uptime_heatmap_array); ?>,
@@ -629,7 +628,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				'%'
 			);
 		
-			<!-- Daily response time -->
+			/* Daily response time */
 			chart_create_daily(
 				'daily_response_time_canvas',
 				<?php echo json_encode(array_keys($daily_response_time_array)); ?>,
@@ -644,7 +643,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				<?php echo microtime(true)*1000; ?>
 			);
 		
-			<!-- Average response time heatmap -->
+			/* Average response time heatmap */
 			chart_create_weekday_daytime_heatmap(
 				'response_time_heatmap_canvas',
 				<?php echo json_encode($response_time_heatmap_array); ?>,
@@ -659,12 +658,10 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				'Avg response time: ',
 				' ms'
 			);
-		</script>
-
-		<!-- Detailed view calendar -->
-		<script type="text/javascript">
-			// Initialize datapicker
-			$('#detailed_view_calendar').datepicker({
+		
+			/* Detailed view datepicker */
+			// Initialize datepicker
+			$('#detailed_view_datepicker').datepicker({
 				startDate: "<?php echo $first_date; ?>",
 				endDate: "<?php echo date('Y-m-d'); ?>",
 				format: "yyyy-mm-dd",
@@ -672,43 +669,38 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				weekStart: 1
 			});
 			
-			// Select today on datapicker
-			$("#detailed_view_calendar").datepicker("update", "<?php echo date('Y-m-d'); ?>");
+			// Select today on datepicker
+			$("#detailed_view_datepicker").datepicker("update", "<?php echo date('Y-m-d'); ?>");
 
-			// Datapicker changeDate handler
-			$('#detailed_view_calendar').datepicker().on("changeDate", function(e) {
+			// Datepicker changeDate handler
+			$('#detailed_view_datepicker').datepicker().on("changeDate", function(e) {
 				var year  = e.date.getFullYear();
 				var month = ( "0" + (e.date.getMonth()+1) ).slice(-2);
 				var day   = ( "0" + e.date.getDate() ).slice(-2);
 				var date  = year + '-' + month + '-' + day;
 				detailed_view_change_date(date);
 			});
-		</script>
-
-		<!-- Detailed view uptime graph -->
-		<script type="text/javascript">
+		
+			/* Detailed view uptime */
 			detailed_view_uptime_chart = chart_create_up_down_donuts(
 				'detailed_view_uptime_canvas',
 				<?php echo $detailed_view_uptime[0]; ?>,
 				<?php echo $detailed_view_uptime[1]; ?>
 			);
-		</script>
-
-		<!-- Detailed view time graph -->
-		<script type="text/javascript">
-			detailed_view_time_chart_pointBackgroundColors = [];
-
-			detailed_view_time_chart = new Chart(document.getElementById('detailed_view_time_canvas'), {
+		
+			/* Detailed view timeline */
+			detailed_view_timeline_chart_pointBackgroundColors = [];
+			detailed_view_timeline_chart = new Chart(document.getElementById('detailed_view_timeline_canvas'), {
 				type: 'line',
 				data: {
-					labels: <?php echo json_encode(array_keys($detailed_view_time_array)); ?>,
+					labels: <?php echo json_encode(array_keys($detailed_view_timeline_array)); ?>,
 					datasets: [{
-						data: <?php echo json_encode(array_column($detailed_view_time_array, 'response_time')); ?>,
-						pointBackgroundColor: detailed_view_time_chart_pointBackgroundColors,
-						reason: <?php echo json_encode(array_column($detailed_view_time_array, 'reason')); ?>,
+						data: <?php echo json_encode(array_column($detailed_view_timeline_array, 'response_time')); ?>,
+						pointBackgroundColor: detailed_view_timeline_chart_pointBackgroundColors,
+						reason: <?php echo json_encode(array_column($detailed_view_timeline_array, 'reason')); ?>,
 						screenshot: <?php
 							$screenshot_array = [];
-							foreach( array_keys($detailed_view_time_array) as $label ) {
+							foreach( array_keys($detailed_view_timeline_array) as $label ) {
 								$label = str_replace(":", "-", $label);
 								$label = str_replace(" ", "_", $label);
 								$screenshot_filename = "screenshot/".date('Y-m-d')."_".$label.".jpg";
@@ -789,37 +781,37 @@ while ($row = mysqli_fetch_assoc($detailed_view_time)) {
 				}
 			});
 
-			document.getElementById('detailed_view_time_canvas').onclick = function (evt) {
-				var clicked_points = detailed_view_time_chart.getElementAtEvent(evt);
-				if (clicked_points.length && detailed_view_time_chart.data.datasets[0].screenshot[clicked_points[0]._index]) {
-					window.open(detailed_view_time_chart.data.datasets[0].screenshot[clicked_points[0]._index], '_blank');
+			$("#detailed_view_timeline_canvas").click(function(evt) {
+				var clicked_points = detailed_view_timeline_chart.getElementAtEvent(evt);
+				if (clicked_points.length && detailed_view_timeline_chart.data.datasets[0].screenshot[clicked_points[0]._index]) {
+					window.open(detailed_view_timeline_chart.data.datasets[0].screenshot[clicked_points[0]._index], '_blank');
 				}
 			};
 
-			function detailed_view_time_chart_update() {
-				detailed_view_time_chart.resetZoom();
+			function detailed_view_timeline_chart_update() {
+				detailed_view_timeline_chart.resetZoom();
 				
-				detailed_view_time_chart_pointBackgroundColors.length = 0;
+				detailed_view_timeline_chart_pointBackgroundColors.length = 0;
 
-				for (i = 0; i < detailed_view_time_chart.data.datasets[0].data.length; i++) {
-					if (detailed_view_time_chart.data.datasets[0].data[i] == 0) {
-						detailed_view_time_chart_pointBackgroundColors.push("red");
+				for (i = 0; i < detailed_view_timeline_chart.data.datasets[0].data.length; i++) {
+					if (detailed_view_timeline_chart.data.datasets[0].data[i] == 0) {
+						detailed_view_timeline_chart_pointBackgroundColors.push("red");
 					} else {
-						detailed_view_time_chart_pointBackgroundColors.push("green");
+						detailed_view_timeline_chart_pointBackgroundColors.push("green");
 					}
 				}
 
-				detailed_view_time_chart.update();
+				detailed_view_timeline_chart.update();
 			}
 
-			detailed_view_time_chart_update();
+			detailed_view_timeline_chart_update();
 		</script>
 		
 		<!-- Load tooltips -->
 		<script type="text/javascript">
 			$(function () {
 				$('[data-toggle="tooltip"]').tooltip()
-			})
+			});
 		</script>
 
 		<!-- Loading screen -->

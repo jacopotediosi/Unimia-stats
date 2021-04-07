@@ -2,9 +2,6 @@
 // DB Connection
 $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
 
-// Used to limit the importance of previous months in charts which must show very recent data
-$n_months_short_term = (int) getenv('N_MONTHS_SHORT_TERM');
-
 // First date
 $first_date   = $db->query("SELECT date_datetime FROM stats ORDER BY date_datetime ASC LIMIT 1")->fetch_row()[0];
 
@@ -40,14 +37,14 @@ $uptime_heatmap = $db->query("
 SELECT t1.dayname, t1.hour_datetime, 
 100/(
 	SELECT COUNT(*) FROM stats t2
-	WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND datetime >= NOW() - INTERVAL 30 DAY
 )*(
-	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND t2.is_up=1 AND datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND t2.is_up=1 AND datetime >= NOW() - INTERVAL 30 DAY
 ) as uptime_percentage
 FROM (
 	SELECT DISTINCT dayname(datetime) as dayname, hour_datetime
 	FROM stats
-	WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH
+	WHERE datetime >= NOW() - INTERVAL 30 DAY
 ) t1
 ");
 while ($row = mysqli_fetch_assoc($uptime_heatmap)) {
@@ -77,7 +74,7 @@ $response_time_heatmap_array = [];
 $response_time_heatmap = $db->query("
 SELECT DAYNAME(datetime) AS dayname, hour_datetime, AVG(response_time) AS avg
 FROM stats
-WHERE datetime >= NOW() - INTERVAL $n_months_short_term MONTH AND is_up=1
+WHERE datetime >= NOW() - INTERVAL 30 DAY AND is_up=1
 GROUP BY DAYNAME(datetime), hour_datetime
 ");
 while ($row = mysqli_fetch_assoc($response_time_heatmap)) {
@@ -277,7 +274,24 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			</div>
 			
 			<!-- Heatmap -->
-			<h2 id="uptime_heatmap" class="mt-4 mb-3 text-center">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+			<div class="row">
+				<div class="col-sm-3 col-md-3 col-xl-2">
+				</div>
+				<div class="col-sm-6 col-md-6 col-xl-8 align-self-center">
+					<h2 id="uptime_heatmap" class="mt-4 mb-3 text-center">Weekday / Daytime Heatmap</h2>
+				</div>
+				<div class="col-sm-3 col-md-3 col-xl-2 px-3 align-self-center">
+					<select id="uptime_heatmap_select" class="custom-select mt-1 mt-sm-4 mb-3" aria-label="Time range select">
+						<option value="current-month">Current month</option>
+						<option value="previous-month">Previous month</option>
+						<option value="last-30-days" selected>Last 30 days</option>
+						<option value="last-60-days">Last 60 days</option>
+						<option value="last-90-days">Last 90 days</option>
+						<option value="last-180-days">Last 180 days</option>
+						<option value="ever">Ever</option>
+					</select>
+				</div>
+			</div>
 			<div style="height: 300px">
 				<canvas id="uptime_heatmap_canvas"></canvas>
 			</div>
@@ -314,7 +328,24 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			</div>
 
 			<!-- Heatmap -->
-			<h2 id="response_time_heatmap" class="mt-4 mb-3 text-center">Weekday / Daytime Heatmap  (last <?php echo $n_months_short_term; echo ($n_months_short_term>1) ? ' months':' month'; ?>)</h2>
+			<div class="row">
+				<div class="col-sm-3 col-md-3 col-xl-2">
+				</div>
+				<div class="col-sm-6 col-md-6 col-xl-8 align-self-center">
+					<h2 id="response_time_heatmap" class="mt-4 mb-3 text-center">Weekday / Daytime Heatmap</h2>
+				</div>
+				<div class="col-sm-3 col-md-3 col-xl-2 px-3 align-self-center">
+					<select id="response_time_heatmap_select" class="custom-select mt-1 mt-sm-4 mb-3" aria-label="Time range select">
+						<option value="current-month">Current month</option>
+						<option value="previous-month">Previous month</option>
+						<option value="last-30-days" selected>Last 30 days</option>
+						<option value="last-60-days">Last 60 days</option>
+						<option value="last-90-days">Last 90 days</option>
+						<option value="last-180-days">Last 180 days</option>
+						<option value="ever">Ever</option>
+					</select>
+				</div>
+			</div>
 			<div style="height: 300px">
 				<canvas id="response_time_heatmap_canvas"></canvas>
 			</div>
@@ -613,20 +644,27 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			);
 		
 			/* Uptime heatmap */
-			chart_create_weekday_daytime_heatmap(
+			// Create the chart legend
+			uptime_heatmap_legend = [
+				{color:"#c70000", hover_color:"#b30000", min:00, max:50,  label: "<=50% uptime"},  // Red
+				{color:"#e87d00", hover_color:"#cc6d00", min:51, max:60,  label: "51-60% uptime"}, // Orange
+				{color:"#f0ca0f", hover_color:"#d8b60e", min:61, max:70,  label: "61-70% uptime"}, // Yellow
+				{color:"#8fda3e", hover_color:"#75c125", min:71, max:80,  label: "71-80% uptime"}, // Light green
+				{color:"#00b300", hover_color:"#009900", min:81, max:90,  label: "81-90% uptime"}, // Green
+				{color:"#008000", hover_color:"#006600", min:91, max:100, label: ">90% uptime"}    // Dark green
+			];
+			// Create the chart
+			uptime_heatmap_chart = chart_create_weekday_daytime_heatmap(
 				'uptime_heatmap_canvas',
 				<?php echo json_encode($uptime_heatmap_array); ?>,
-				[
-					{color:"#c70000", hover_color:"#b30000", min:00, max:50,  label: "<=50% uptime"},  // Red
-					{color:"#e87d00", hover_color:"#cc6d00", min:51, max:60,  label: "51-60% uptime"}, // Orange
-					{color:"#f0ca0f", hover_color:"#d8b60e", min:61, max:70,  label: "61-70% uptime"}, // Yellow
-					{color:"#8fda3e", hover_color:"#75c125", min:71, max:80,  label: "71-80% uptime"}, // Light green
-					{color:"#00b300", hover_color:"#009900", min:81, max:90,  label: "81-90% uptime"}, // Green
-					{color:"#008000", hover_color:"#006600", min:91, max:100, label: ">90% uptime"}    // Dark green
-				],
+				uptime_heatmap_legend,
 				'Uptime: ',
 				'%'
 			);
+			// Select onchange handler
+			$("#uptime_heatmap_select").change(function() {
+				uptime_heatmap_change_daterange($(this).val(), uptime_heatmap_legend);
+			});
 		
 			/* Daily response time */
 			chart_create_daily(
@@ -644,20 +682,27 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			);
 		
 			/* Average response time heatmap */
-			chart_create_weekday_daytime_heatmap(
+			// Create the chart legend
+			response_time_heatmap_legend = [
+				{color:"#c70000", hover_color:"#b30000", min:15000, max:100000, label:">15s"},    // Red
+				{color:"#e87d00", hover_color:"#cc6d00", min:9000, max:14999,   label:"9-14,9s"}, // Orange
+				{color:"#f0ca0f", hover_color:"#d8b60e", min:6000, max:8999,    label:"6-8,9s"},  // Yellow
+				{color:"#8fda3e", hover_color:"#75c125", min:4000, max:5999,    label:"4-5,9s"},  // Light green
+				{color:"#00b300", hover_color:"#009900", min:3000, max:3999,    label:"3-3,9s"},  // Green
+				{color:"#008000", hover_color:"#006600", min:0000, max:2999,    label:"<3s"}      // Dark green
+			];
+			// Create the chart
+			response_time_heatmap_chart = chart_create_weekday_daytime_heatmap(
 				'response_time_heatmap_canvas',
 				<?php echo json_encode($response_time_heatmap_array); ?>,
-				[
-					{color:"#c70000", hover_color:"#b30000", min:15000, max:100000, label:">15s"},    // Red
-					{color:"#e87d00", hover_color:"#cc6d00", min:9000, max:14999,   label:"9-14,9s"}, // Orange
-					{color:"#f0ca0f", hover_color:"#d8b60e", min:6000, max:8999,    label:"6-8,9s"},  // Yellow
-					{color:"#8fda3e", hover_color:"#75c125", min:4000, max:5999,    label:"4-5,9s"},  // Light green
-					{color:"#00b300", hover_color:"#009900", min:3000, max:3999,    label:"3-3,9s"},  // Green
-					{color:"#008000", hover_color:"#006600", min:0000, max:2999,    label:"<3s"}      // Dark green
-				],
+				response_time_heatmap_legend,
 				'Avg response time: ',
 				' ms'
 			);
+			// Select onchange handler
+			$("#response_time_heatmap_select").change(function() {
+				response_time_heatmap_change_daterange($(this).val(), response_time_heatmap_legend);
+			});
 		
 			/* Detailed view datepicker */
 			// Initialize datepicker
@@ -786,7 +831,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				if (clicked_points.length && detailed_view_timeline_chart.data.datasets[0].screenshot[clicked_points[0]._index]) {
 					window.open(detailed_view_timeline_chart.data.datasets[0].screenshot[clicked_points[0]._index], '_blank');
 				}
-			};
+			});
 
 			function detailed_view_timeline_chart_update() {
 				detailed_view_timeline_chart.resetZoom();

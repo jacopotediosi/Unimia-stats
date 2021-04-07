@@ -20,8 +20,10 @@ if ( !isset($_GET['operation']) || !$_GET['operation'] )
 // Open DB Connection
 $db = new mysqli(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
 
-// Detailed view operation
+// Check operation
 if ( $_GET['operation']==='detailed_view' ) {
+	// Detailed view operation
+	
 	// Check date parameter
 	if ( !isset($_GET['date']) || !preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/', $_GET['date']) ) {
 		// Date parameter is wrong
@@ -80,6 +82,126 @@ if ( $_GET['operation']==='detailed_view' ) {
 			'time_graph_reason'     => array_column($time_graph_array, 'reason'),
 			'time_graph_screenshot' => array_values($time_graph_screenshot)
 		));
+	}
+} elseif ( $_GET['operation']==='uptime_heatmap' ) {
+	// Uptime heatmap operation
+	
+	// Check daterange parameter
+	if (isset($_GET['daterange'])) {
+		// Initialize uptime_heatmap_array
+		$uptime_heatmap_array = [];
+		
+		// Where condition based on the daterange
+		switch($_GET['daterange']) {
+			case 'current-month':
+				$where_condition = "datetime >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH AND datetime < LAST_DAY(CURDATE()) + INTERVAL 1 DAY";
+				break;
+			case 'previous-month':
+				$where_condition = "datetime >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 2 MONTH AND datetime < LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH";
+				break;
+			case 'last-30-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 30 DAY";
+				break;
+			case 'last-60-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 60 DAY";
+				break;
+			case 'last-90-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 90 DAY";
+				break;
+			case 'last-180-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 180 DAY";
+				break;
+			case 'ever':
+				$where_condition = "1=1";
+				break;
+			default:
+				// Wrong daterange parameter
+				api_error_die(400, "Wrong daterange parameter");
+		}
+		
+		// Do the query
+		$uptime_heatmap = $db->query("
+			SELECT t1.dayname, t1.hour_datetime, 
+			100/(
+				SELECT COUNT(*) FROM stats t2
+				WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND $where_condition
+			)*(
+				SELECT COUNT(*) FROM stats t2 WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND t2.is_up=1 AND $where_condition
+			) as uptime_percentage
+			FROM (
+				SELECT DISTINCT dayname(datetime) as dayname, hour_datetime
+				FROM stats
+				WHERE $where_condition
+			) t1
+		");
+		// Fill the uptime_heatmap_array
+		while ($row = mysqli_fetch_assoc($uptime_heatmap)) {
+			$uptime_heatmap_array[$row['dayname']][$row['hour_datetime']] = (double) $row['uptime_percentage'];
+		}
+		
+		// Output
+		api_success_die(array(
+			'uptime_heatmap_array' => $uptime_heatmap_array
+		));
+	} else {
+		// Missing daterange parameter
+		api_error_die(400, "Missing daterange parameter");
+	}
+} elseif ( $_GET['operation']==='response_time_heatmap' ) {
+	// Uptime heatmap operation
+	
+	// Check daterange parameter
+	if (isset($_GET['daterange'])) {
+		// Initialize uptime_heatmap_array
+		$response_time_heatmap_array = [];
+		
+		// Where condition based on the daterange
+		switch($_GET['daterange']) {
+			case 'current-month':
+				$where_condition = "datetime >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH AND datetime < LAST_DAY(CURDATE()) + INTERVAL 1 DAY";
+				break;
+			case 'previous-month':
+				$where_condition = "datetime >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 2 MONTH AND datetime < LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH";
+				break;
+			case 'last-30-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 30 DAY";
+				break;
+			case 'last-60-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 60 DAY";
+				break;
+			case 'last-90-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 90 DAY";
+				break;
+			case 'last-180-days':
+				$where_condition = "datetime >= NOW() - INTERVAL 180 DAY";
+				break;
+			case 'ever':
+				$where_condition = "1=1";
+				break;
+			default:
+				// Wrong daterange parameter
+				api_error_die(400, "Wrong daterange parameter");
+		}
+		
+		// Do the query
+		$response_time_heatmap = $db->query("
+			SELECT DAYNAME(datetime) AS dayname, hour_datetime, AVG(response_time) AS avg
+			FROM stats
+			WHERE $where_condition AND is_up=1
+			GROUP BY DAYNAME(datetime), hour_datetime
+		");
+		// Fill the uptime_heatmap_array
+		while ($row = mysqli_fetch_assoc($response_time_heatmap)) {
+			$response_time_heatmap_array[$row['dayname']][$row['hour_datetime']] = (double) $row['avg'];
+		}
+		
+		// Output
+		api_success_die(array(
+			'response_time_heatmap_array' => $response_time_heatmap_array
+		));
+	} else {
+		// Missing daterange parameter
+		api_error_die(400, "Missing daterange parameter");
 	}
 }
 

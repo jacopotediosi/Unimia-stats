@@ -18,3 +18,10 @@ body img {
 .datepicker table tr td.day:hover, .datepicker table tr td.focused, .datepicker .datepicker-switch:hover, .datepicker .next:hover, .datepicker .prev:hover, .datepicker tfoot tr th:hover, .datepicker table tr td span.focused, .datepicker table tr td span:hover {
 	background: #444;
 }
+
+.custom-select {
+    color: rgba(255, 255, 255, 0.87);
+    border-color: rgb(133, 133, 133);
+    background: #303030 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23FFFFFF' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat;
+
+}

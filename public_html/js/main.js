@@ -262,6 +262,82 @@ function stop_loading_screen() {
 
 /* CHARTS CUSTOM UPDATE HANDLERS */
 
+function uptime_heatmap_change_daterange(daterange, uptime_heatmap_legend) {
+	// Start the loading animation
+	start_loading_screen();
+
+	// Start ajax request
+	$.get("ajax.php?operation=uptime_heatmap&daterange="+daterange, function(data) {
+		// Parse data
+		var uptime_heatmap_array = data["data"].uptime_heatmap_array;
+
+		// Clear old chart datasets
+		for(i in uptime_heatmap_legend) {
+			uptime_heatmap_chart.data.datasets[i].data.length = 0;
+		}
+		
+		// Fill chart datasets with new data
+		for(day in uptime_heatmap_array) {
+			for(hour in uptime_heatmap_array[day]) {
+				// Get the value
+				var value = uptime_heatmap_array[day][hour];
+				// Select the right color from the legend
+				for(legend in uptime_heatmap_legend) {
+					if(Math.round(value)>=uptime_heatmap_legend[legend].min && Math.round(value)<=uptime_heatmap_legend[legend].max) {
+						// Add to the right dataset
+						uptime_heatmap_chart.data.datasets[legend].data.push({x:hour, y:day, v:value});
+						break;
+					}
+				}
+			}
+		}
+		
+		// Update the chart
+		uptime_heatmap_chart.update();
+
+		// Stop the loading animation
+		stop_loading_screen();
+	});
+}
+
+function response_time_heatmap_change_daterange(daterange, response_time_heatmap_legend) {
+	// Start the loading animation
+	start_loading_screen();
+
+	// Start ajax request
+	$.get("ajax.php?operation=response_time_heatmap&daterange="+daterange, function(data) {
+		// Parse data
+		var response_time_heatmap_array = data["data"].response_time_heatmap_array;
+
+		// Clear old chart datasets
+		for(i in response_time_heatmap_legend) {
+			response_time_heatmap_chart.data.datasets[i].data.length = 0;
+		}
+		
+		// Fill chart datasets with new data
+		for(day in response_time_heatmap_array) {
+			for(hour in response_time_heatmap_array[day]) {
+				// Get the value
+				var value = response_time_heatmap_array[day][hour];
+				// Select the right color from the legend
+				for(legend in response_time_heatmap_legend) {
+					if(Math.round(value)>=response_time_heatmap_legend[legend].min && Math.round(value)<=response_time_heatmap_legend[legend].max) {
+						// Add to the right dataset
+						response_time_heatmap_chart.data.datasets[legend].data.push({x:hour, y:day, v:value});
+						break;
+					}
+				}
+			}
+		}
+		
+		// Update the chart
+		response_time_heatmap_chart.update();
+
+		// Stop the loading animation
+		stop_loading_screen();
+	});
+}
+
 function detailed_view_change_date(date) {
 	// Start the loading animation
 	start_loading_screen();

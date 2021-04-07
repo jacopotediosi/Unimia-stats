@@ -29,8 +29,6 @@ services:
               max-size: "10m"
       environment:
           <<: *common-env
-          # Used to limit the importance of previous months in charts which must show very recent data
-          N_MONTHS_SHORT_TERM: 1
           # Google Tag ID (empty if not used)
           GTAG_ID: ''
       # Feel free to enable the healthcheck if you want

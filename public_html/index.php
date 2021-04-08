@@ -600,11 +600,13 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 		<script type="text/javascript">
 			// Init toggle
 			$("#darkmode_toggle").bootstrapToggle();
+			
 			// The default state should be aligned with the current theme
 			if (localStorage.getItem('theme')=='dark')
 				$('#darkmode_toggle').bootstrapToggle('on', true);
 			else
 				$('#darkmode_toggle').bootstrapToggle('off', true);
+				
 			// Handle toggle changes
 			$('#darkmode_toggle').change(function() {
 				if ($('#darkmode_toggle').prop('checked'))
@@ -616,16 +618,16 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 
 		<!-- Charts creation -->
 		<script type="text/javascript">	
-			/* Uptime donut charts */
-			var chart_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
-			var chart_datas = [
+			/* Uptime donuts */
+			var canvas_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
+			var charts_data = [
 				[<?php echo $uptime_today[0]; ?>, <?php echo $uptime_today[1]; ?>],
-				[<?php echo $uptime_week[0]; ?>, <?php echo $uptime_week[1]; ?>],
+				[<?php echo $uptime_week[0];  ?>, <?php echo $uptime_week[1];  ?>],
 				[<?php echo $uptime_month[0]; ?>, <?php echo $uptime_month[1]; ?>],
-				[<?php echo $uptime_all[0]; ?>, <?php echo $uptime_all[1]; ?>]
+				[<?php echo $uptime_all[0];   ?>, <?php echo $uptime_all[1];   ?>]
 			];
 			for (var i = 0; i < 4; i++) {
-				chart_create_up_down_donuts(chart_ids[i], chart_datas[i][0], chart_datas[i][1]);
+				chart_create_up_down_donuts(canvas_ids[i], charts_data[i][0], charts_data[i][1]);
 			}
 		
 			/* Daily uptime */

@@ -216,7 +216,7 @@ function chart_create_daily(canvas_id, labels, data, y_labelString, x_ticks_min,
 		}
 	});
 	
-	$(canvas_id).click(function(evt) {
+	document.getElementById(canvas_id).onclick = function (evt) {
 		var clicked_points = new_chart.getElementAtEvent(evt);
 		if (clicked_points.length) {
 			detailed_view_change_date(new_chart.data.labels[clicked_points[0]._index]);
@@ -224,7 +224,7 @@ function chart_create_daily(canvas_id, labels, data, y_labelString, x_ticks_min,
 				'scrollTop':   $('#detailed_view_uptime').offset().top-56
 			}, 'slow');
 		}
-	});
+	};
 	
 	return new_chart;
 }

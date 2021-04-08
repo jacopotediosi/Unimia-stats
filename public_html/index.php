@@ -203,7 +203,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 						</div>
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Unimia Analysis</a>
+						<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Unimia analysis</a>
 						<div class="dropdown-menu dropdown-menu-right">
 							<a class="dropdown-item" href="#analysis_disclaimer">Disclaimer</a>
 							<a class="dropdown-item" href="#analysis_introduction">Introduction</a>
@@ -219,6 +219,9 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 							<a class="dropdown-item" href="#analysis_responsive_design">Responsive Design</a>
 							<a class="dropdown-item" href="#analysis_some_food_for_thought">Some food for thought</a>
 						</div>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#open_data">Open data</a>
 					</li>
 					<li class='nav-item'>
 						<span class='nav-link'>
@@ -408,7 +411,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			</div>
 			
 			<!-- UNIMIA ANALYSIS -->
-			<h1 class="mt-5 mb-5 display-4">Unimia Analysis</h1>
+			<h1 class="mt-5 mb-5 display-4">Unimia analysis</h1>
 			
 			<!-- Disclaimer -->
 			<h2 id="analysis_disclaimer" class="mt-4 mb-3 text-center">Disclaimer</h2>
@@ -570,6 +573,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<li>Is it normal for a site to fail to maintain nearly 100% uptime?</li>
 					<li>How much does the maintenance of web portals impact on our university fees? Are the services we can use worth this amount?</li>
 				</ul>
+			</p>
+
+			<!-- OPEN DATA -->
+			<h1 class="mt-5 mb-5 display-4" id="open_data">Open data</h1>
+			<p>
+				Databases and screenshots produced by this tool are publicly released under a <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">Creative Commons license (CC BY-NC 4.0)</a>.
+			</p>
+			<p>
+				Every 15 days an automatic process creates a compressed archive containing these data. It is possible to download the most recent copy at <a href="/downloads/latest_dump.tar.gz" target="_blank" rel="noopener">this link</a>.
 			</p>
 		</div>
 

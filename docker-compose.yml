@@ -51,6 +51,7 @@ services:
       volumes:
           - ./private/:/private/:rw
           - ./public_html/screenshot/:/screenshot/:rw
+          - ./public_html/downloads/:/downloads/:rw
       logging:
           driver: "json-file"
           options:

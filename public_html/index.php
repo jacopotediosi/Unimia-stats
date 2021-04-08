@@ -852,10 +852,23 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			detailed_view_timeline_chart_update();
 		</script>
 		
-		<!-- Load tooltips -->
+		<!-- Back to the top button -->
+		<a id='back_to_the_top' href='#' class='btn btn-lg btn-primary rounded-circle' role='button'><i class='fas fa-arrow-up'></i></a>
 		<script type="text/javascript">
-			$(function () {
-				$('[data-toggle="tooltip"]').tooltip()
+			// Back to the top button should appear only when page is scrolled
+			$(window).scroll(function () {
+				if ($(this).scrollTop() > 50) {
+					$('#back_to_the_top').fadeIn();
+				} else {
+					$('#back_to_the_top').fadeOut();
+				}
+			});
+			// Scroll body to the top on click
+			$('#back_to_the_top').click(function () {
+				$('body,html').animate({
+					scrollTop: 0
+				}, 800);
+				return false;
 			});
 		</script>
 
@@ -867,6 +880,13 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				</div>
 			</div>
 		</div>
+		
+		<!-- Load tooltips -->
+		<script type="text/javascript">
+			$(function () {
+				$('[data-toggle="tooltip"]').tooltip()
+			});
+		</script>
 		
 		<!-- Apply correct theme -->
 		<script type="text/javascript">

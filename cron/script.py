@@ -185,11 +185,11 @@ if not is_up and which_request_to_save != 0:
 
 			// TODO: "Esami e opinioni degli studenti" section
 
-			// "Situazione amministrativa" section
+			// "Situazione amministrativa" section (redact all values in columns 2, 3, 4, 5)
 			try {
 				tasse = document.getElementById("lista-tasse").getElementsByTagName("td")
 				for (i = 0; i < tasse.length; i++) {
-					if ([2, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 17].includes(i)) {
+					if ([2, 3, 4, 5].includes(i%6)) {
 						tasse[i].innerText='REDACTED';
 					}
 				}

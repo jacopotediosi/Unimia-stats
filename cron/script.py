@@ -183,7 +183,12 @@ if not is_up and which_request_to_save != 0:
 				}
 			} catch (e) {}
 
-			// TODO: "Esami e opinioni degli studenti" section
+			// "Esami e opinioni degli studenti" section
+			try {
+				exam_subscriptions = document.getElementById("pt-portlet-content-310").getElementsByClassName("floatLeft")[0];
+				exam_subscriptions.getElementsByTagName("p")[0].innerHTML = '<strong>REDACTED</strong>';
+				exam_subscriptions.getElementsByTagName("ul")[0].innerText = '';
+			} catch (e) {}
 
 			// "Situazione amministrativa" section (redact all values in columns 2, 3, 4, 5)
 			try {

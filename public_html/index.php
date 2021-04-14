@@ -446,6 +446,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p><img src="/img/unimia_source_1.jpg" class="img-fluid" alt="HTML comments in Unimia sources"></p>
 				</div>
 				<div class="col-xl align-self-center">
+					<p>The frontend is built with Apache installed on a CentOS machine, which acts as a reverse proxy to a Tomcat backend. The infrastructure probably also uses Varnish as a cache system.</p>
 					<p>The last line in the HTML response of any Unimia page is a comment that contains "Portal Version: 10.3.3.379633", which indicates that the site was create using WebCenter Interaction (below we will call it "WIB").</p>
 					<p>WIB is an EOL (End of Life) Oracle product, released in 2008. Version 10.3.3.379633, released on 08/12/2011, is the last and latest version of WIB. WIB Premier Support ended in 2015 and its Extended Support ended in 2017 (source: page 30/70 of <a href="http://www.oracle.com/us/support/library/lifetime-support-middleware-069163.pdf" target="_blank" rel="noopener">this document</a>).<br>
 					This means that Oracle no longer releases updates, not even security updates to fix critical vulnerabilities, and suggests to migrate to the new equivalent software called "Oracle WebCenter Portal".</p>
@@ -473,8 +474,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p><img src="/img/unimia_cookies_1.jpg" class="img-fluid" alt="Unimia cookies without Httponly flag"></p>
 				</div>
 				<div class="col-xl align-self-center">
-					<p>The frontend is built with Apache installed on a CentOS machine, which acts as a reverse proxy to a Tomcat backend. The infrastructure probably also uses Varnish as a cache system.</p>
-					<p>this means that if there were <a href="https://en.wikipedia.org/wiki/Cross-site_scripting" target="_blank" rel="noopener">XSS (Cross-Site Scripting)</a> vulnerabilities on the webapp (some were found, but it is not the purpose of this site to disclose them) it would be quite easy to steal the sessions of other users.</p>
+					<p>Cookies doesn't use HttpOnly flag, this means that if there were <a href="https://en.wikipedia.org/wiki/Cross-site_scripting" target="_blank" rel="noopener">XSS (Cross-Site Scripting)</a> vulnerabilities on the webapp (some were found, but it is not the purpose of this site to disclose them) it would be quite easy to steal the sessions of other users.</p>
 					<p>The lack of the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank" rel="noopener">X-Frame-Options header</a>, as well as opening the way to clickjacking attacks, makes XSS more subtle and quiet possible.</p>
 				</div>
 			</div>

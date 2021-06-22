@@ -34,7 +34,7 @@ while ($row = mysqli_fetch_assoc($daily_uptime)) {
 // Uptime heatmap
 $uptime_heatmap_array = [];
 $uptime_heatmap = $db->query("
-SELECT t1.dayname, t1.hour_datetime, 
+SELECT t1.dayname, t1.hour_datetime,
 100/(
 	SELECT COUNT(*) FROM stats t2
 	WHERE dayname(t2.datetime)=t1.dayname AND t2.hour_datetime=t1.hour_datetime AND datetime >= NOW() - INTERVAL 30 DAY
@@ -109,7 +109,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 		<link rel="shortcut icon" href="favicon.ico">
 		<meta name="color-scheme" content="light dark">
 		<meta name="description" content="Unimia Stats is a tool to monitor status of unimia.unimi.it">
-		
+
 		<!-- Bootstrap light theme CSS -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 		<!-- Bootstrap dark theme CSS -->
@@ -118,15 +118,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.standalone.min.css" integrity="sha512-p4vIrJ1mDmOVghNMM4YsWxm0ELMJ/T0IkdEvrkNHIcgFsSzDi/fV7YxzTzb3mnMvFPawuIyIrHcpxClauEfpQg==" crossorigin="anonymous">
 		<!-- Bootstrap4-toggle CSS -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap4-toggle/3.6.1/bootstrap4-toggle.min.css" integrity="sha512-EzrsULyNzUc4xnMaqTrB4EpGvudqpetxG/WNjCpG6ZyyAGxeB6OBF9o246+mwx3l/9Cn838iLIcrxpPHTiygAA==" crossorigin="anonymous" />
-		
+
 		<!-- Font-awesome CSS-->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
-		
+
 		<!-- Main theme CSS -->
 		<link rel="stylesheet" href="/css/main.css">
 		<!-- Dark theme CSS -->
 		<link rel="stylesheet" href="/css/main_dark.css" media="(prefers-color-scheme: dark)" id="main_dark_css">
-		
+
 		<!-- Initialize theme -->
 		<script type="text/javascript">
 		// Set preference in localstorage if user is visiting the site for the first time
@@ -275,7 +275,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			<div style="height: 300px">
 				<canvas id="daily_uptime_canvas"></canvas>
 			</div>
-			
+
 			<!-- Heatmap -->
 			<div class="row">
 				<div class="col-sm-3 col-md-3 col-xl-2">
@@ -409,14 +409,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			<div style="height: 400px">
 				<canvas id="detailed_view_timeline_canvas"></canvas>
 			</div>
-			
+
 			<!-- UNIMIA ANALYSIS -->
 			<h1 class="mt-5 mb-5 display-4">Unimia analysis</h1>
-			
+
 			<!-- Disclaimer -->
 			<h2 id="analysis_disclaimer" class="mt-4 mb-3 text-center">Disclaimer</h2>
 			<p>Following informations are the result of <a href="https://en.wikipedia.org/wiki/Reverse_engineering" target="_blank" rel="noopener">reverse engineering</a> and any user enabled to the platform (so any student) can discover and verify them independently. They are therefore to be considered public knowledge and their disclosure is totally legitimate. Each issue listed below has already been notified for over a year to the platform owners, who have never responded to the numerous reports.</p>
-			
+
 			<!-- Introduction -->
 			<h2 id="analysis_introduction" class="mt-4 mb-3 text-center">Introduction</h2>
 			<div class="row">
@@ -429,7 +429,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 							&ldquo;Unimia is a web area reserved for registered students and graduates of the University of Milan, which brings together individual information and online services: a gateway to administrative and career informations, teaching and secretarial services, academic deadlines&rdquo;
 						</p>
 						<footer class="blockquote-footer">
-							From the <a href="https://www.unimi.it/it/studiare/servizi-gli-studenti/servizi-tecnologici-e-online/unimia-il-portale-degli-studenti" target="_blank" rel="noopener">University of Milan website</a>
+							From the <a href="https://www.unimi.it/en/study/student-services/technology-and-online-services/unimia-students-portal" target="_blank" rel="noopener">University of Milan website</a>
 						</footer>
 					</blockquote>
 					<p>Basically <a href="http://unimia.unimi.it" target="_blank" rel="noopener">Unimia</a> is an obsolete, bug-ridden and almost unusable webapp that all Unimi students (<a href="https://work.unimi.it/appelli/Iscritti-anno_2020_21.pdf" target="_blank" rel="noopener">nearly 63 000</a>) must use every day to manage their university careers and most of the services offered by the university.</p>
@@ -438,7 +438,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>Now imagine being a student. Today is the deadline to book an exam and you're late. Unimia is down. It's a big disservice!<br>Or again, imagine what a problem would be if someone could reject the result of an exam in which you were awarded the maximum grade!</p>
 				</div>
 			</div>
-			
+
 			<!-- An EOL product -->
 			<h2 id="analysis_an_eol_product" class="mt-4 mb-3 text-center">An EOL product</h2>
 			<div class="row">
@@ -453,7 +453,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>Unimia <a href="https://web.archive.org/web/20101015000000*/unimia.unimi.it" target="_blank" rel="noopener">first appeared on Archive.org</a> on 22 October 2010, less than a year before WIB became EOL.</p>
 				</div>
 			</div>
-			
+
 			<!-- Without HTTPS -->
 			<h2 id="analysis_without_https" class="mt-4 mb-3 text-center">Without HTTPS</h2>
 			<div class="row">
@@ -466,7 +466,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>Data sent directly to Unimia transits in cleartext around the network and therefore risks being intercepted both by your ISP and by malicious users on your same LAN (making the webapp unsafe to use from public wifi, like the one offered by the university).</p>
 				</div>
 			</div>
-			
+
 			<!-- Cookies without HttpOnly -->
 			<h2 id="analysis_cookies_without_httponly" class="mt-4 mb-3 text-center">Cookies without HttpOnly</h2>
 			<div class="row">
@@ -478,7 +478,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>The lack of the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank" rel="noopener">X-Frame-Options header</a>, as well as opening the way to clickjacking attacks, makes XSS more subtle and quiet possible.</p>
 				</div>
 			</div>
-			
+
 			<!-- Public exploits -->
 			<h2 id="analysis_public_exploits" class="mt-4 mb-3 text-center">Public exploits</h2>
 			<div class="row">
@@ -492,7 +492,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>Being a niche product and now in disuse, it cannot be excluded that there are private or undiscovered vulnerabilities due to a lack of interested researchers.</p>
 				</div>
 			</div>
-			
+
 			<!-- Directory Listing -->
 			<h2 id="analysis_directory_listing" class="mt-4 mb-3 text-center">Directory Listing</h2>
 			<div class="row">
@@ -504,7 +504,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>For example at <a href="http://unimia.unimi.it/portal/server.pt/gateway/PTARGS_0_0_227_207_0_43/" target="_blank" rel="noopener">this link</a> you can find an old forgotten backup tar, containing some portlets source codes.</p>
 				</div>
 			</div>
-			
+
 			<!-- Stacktrace enabled -->
 			<h2 id="analysis_stacktrace_enabled" class="mt-4 mb-3 text-center">Stacktrace enabled</h2>
 			<div class="row">
@@ -516,7 +516,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>Error messages are so frequent that they are considered "normal" by users and sometimes they have become a viral meme on Instagram (examples <a href="https://www.instagram.com/p/CL1PwtmDHjV/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/B7WcTwyinkJ/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/B-eo2ChHkzh/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CH2zG9QhN7_/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CHAuX97KCZN/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CB3usUZHVNs/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/CBYmY9SnqcU/" target="_blank" rel="noopener">here</a>, <a href="https://www.instagram.com/p/B99oaSfnsQu/" target="_blank" rel="noopener">here</a>...) and other social networks used by students.</p>
 				</div>
 			</div>
-			
+
 			<!-- CAS Cookies -->
 			<h2 id="analysis_cas_cookies" class="mt-4 mb-3 text-center">CAS cookies</h2>
 			<div class="row">
@@ -528,7 +528,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>This means that any unimi subdomain being compromised or run by an disgruntled employee is theoretically capable of taking over their visitors CAS session.</p>
 				</div>
 			</div>
-			
+
 			<!-- Admin folders -->
 			<h2 id="analysis_admin_folders" class="mt-4 mb-3 text-center">Admin folders</h2>
 			<div class="row">
@@ -540,15 +540,15 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>What a strange bug!</p>
 				</div>
 			</div>
-			
+
 			<!-- SLA -->
 			<h2 id="analysis_sla" class="mt-4 mb-3 text-center">Service Level Agreement</h2>
 			<p>The main reason why Unimia Stats exists is to monitor Unimia and understand if the service actually works as it is supposed to.</p>
 			<p>However, not everyone knows of the existence of a document called "Carta dei servizi", in which Unimi ICT offices undertake to respect certain quality levels. The latest version, signed in February 2021, is available at <a href="https://www.unimi.it/sites/default/files/2021-02/Direzione%20ICT%20-%20Feb%202021_0.pdf" target="_blank" rel="noopener">this address</a>. The parameters that Unimi uses to measure the quality of Unimia's service are explained on page 8/12 of the document.</p>
 			<p>In particular the "Effectiveness" indicator says that "the ratio between the number of page views indicated by Google Analytics and the number of errors reported (automatically by SiteImprove and Google Analytics or manually via email by users) must be at least 98%". Two questions must be asked at this point: is it reasonable to compare two things that have nothing to do with each other such as the number of page views and the number of errors reported by users? Google Analytics and SiteImprove are tools for optimizing SEO and site accessibility, but how do they detect if the site actually shows usable contents instead of error messages during a day?</p>
 			<p>The "Continuity" indicator mentions that "Unimia must be usable, except for malfunctions not attributable to Unimi, 365 days a year 23 hours a day". That would be 95.83% of annual uptime, while the average that Unimia Stats usually detects is around 88%.</p>
-			
-			
+
+
 			<!-- Responsive Design -->
 			<h2 id="analysis_responsive_design" class="mt-4 mb-3 text-center">Responsive Design</h2>
 			<div class="row">
@@ -561,7 +561,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 					<p>On the server there are some hidden stylesheets, probably under development, which once activated make Unimia responsive on mobile devices. The graphics would look similar to the one shown in the attached photo.</p>
 				</div>
 			</div>
-			
+
 			<!-- Some food for thought -->
 			<h2 id="analysis_some_food_for_thought" class="mt-4 mb-3 text-center">Some food for thought</h2>
 			<p>
@@ -601,24 +601,24 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 		<script src="/js/chartjs-plugin-zoom.min.js"></script> <!-- Local edited version instead of CDN until they fix https://github.com/chartjs/chartjs-plugin-zoom/pull/429 -->
 		<!-- Chart.js Matrix Plugin -->
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@0.1.3/dist/chartjs-chart-matrix.min.js" integrity="sha256-w0NjVSRI+HwjqhuitUP0LW5ycKcCs7rMS6k8WHpdgmc=" crossorigin="anonymous"></script>
-		
+
 		<!-- Main js -->
 		<script src="/js/main.js"></script>
 
 		<!-- Week starts with Monday in all charts -->
 		<script type="text/javascript">moment.updateLocale('en', {week: {dow: 1}});</script>
-		
+
 		<!-- Darkmode toggle in navbar -->
 		<script type="text/javascript">
 			// Init toggle
 			$("#darkmode_toggle").bootstrapToggle();
-			
+
 			// The default state should be aligned with the current theme
 			if (localStorage.getItem('theme')=='dark')
 				$('#darkmode_toggle').bootstrapToggle('on', true);
 			else
 				$('#darkmode_toggle').bootstrapToggle('off', true);
-				
+
 			// Handle toggle changes
 			$('#darkmode_toggle').change(function() {
 				if ($('#darkmode_toggle').prop('checked'))
@@ -629,7 +629,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 		</script>
 
 		<!-- Charts creation -->
-		<script type="text/javascript">	
+		<script type="text/javascript">
 			/* Uptime donuts */
 			var canvas_ids = ['uptime1_canvas', 'uptime2_canvas', 'uptime3_canvas', 'uptime4_canvas'];
 			var charts_data = [
@@ -641,7 +641,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			for (var i = 0; i < 4; i++) {
 				chart_create_up_down_donuts(canvas_ids[i], charts_data[i][0], charts_data[i][1]);
 			}
-		
+
 			/* Daily uptime */
 			chart_create_daily(
 				'daily_uptime_canvas',
@@ -656,7 +656,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				<?php echo strtotime($first_date)*1000; ?>,
 				<?php echo microtime(true)*1000; ?>
 			);
-		
+
 			/* Uptime heatmap */
 			// Create the chart legend
 			uptime_heatmap_legend = [
@@ -679,7 +679,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			$("#uptime_heatmap_select").change(function() {
 				uptime_heatmap_change_daterange($(this).val(), uptime_heatmap_legend);
 			});
-		
+
 			/* Daily response time */
 			chart_create_daily(
 				'daily_response_time_canvas',
@@ -694,7 +694,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				<?php echo strtotime($first_date)*1000; ?>,
 				<?php echo microtime(true)*1000; ?>
 			);
-		
+
 			/* Average response time heatmap */
 			// Create the chart legend
 			response_time_heatmap_legend = [
@@ -717,7 +717,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 			$("#response_time_heatmap_select").change(function() {
 				response_time_heatmap_change_daterange($(this).val(), response_time_heatmap_legend);
 			});
-		
+
 			/* Detailed view datepicker */
 			// Initialize datepicker
 			$('#detailed_view_datepicker').datepicker({
@@ -727,7 +727,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				todayHighlight: true,
 				weekStart: 1
 			});
-			
+
 			// Select today on datepicker
 			$("#detailed_view_datepicker").datepicker("update", "<?php echo date('Y-m-d'); ?>");
 
@@ -739,14 +739,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				var date  = year + '-' + month + '-' + day;
 				detailed_view_change_date(date);
 			});
-		
+
 			/* Detailed view uptime */
 			detailed_view_uptime_chart = chart_create_up_down_donuts(
 				'detailed_view_uptime_canvas',
 				<?php echo $detailed_view_uptime[0]; ?>,
 				<?php echo $detailed_view_uptime[1]; ?>
 			);
-		
+
 			/* Detailed view timeline */
 			detailed_view_timeline_chart_pointBackgroundColors = [];
 			detailed_view_timeline_chart = new Chart(document.getElementById('detailed_view_timeline_canvas'), {
@@ -849,7 +849,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 
 			function detailed_view_timeline_chart_update() {
 				detailed_view_timeline_chart.resetZoom();
-				
+
 				detailed_view_timeline_chart_pointBackgroundColors.length = 0;
 
 				for (i = 0; i < detailed_view_timeline_chart.data.datasets[0].data.length; i++) {
@@ -865,7 +865,7 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 
 			detailed_view_timeline_chart_update();
 		</script>
-		
+
 		<!-- Back to the top button -->
 		<a id='back_to_the_top' href='#' class='btn btn-lg btn-primary rounded-circle' role='button'><i class='fas fa-arrow-up'></i></a>
 		<script type="text/javascript">
@@ -894,14 +894,14 @@ while ($row = mysqli_fetch_assoc($detailed_view_timeline)) {
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Load tooltips -->
 		<script type="text/javascript">
 			$(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 			});
 		</script>
-		
+
 		<!-- Apply correct theme -->
 		<script type="text/javascript">
 			changeTheme(localStorage.getItem('theme'));

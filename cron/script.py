@@ -87,8 +87,9 @@ try:
 		raise Exception('Page doesn\'t contain "tipo di iscrizione: </strong>in corso"')
 	elif "vuoi iscriverti" not in unimia_request_lower:
 		raise Exception('Page doesn\'t contain "vuoi iscriverti"')
-	elif "dettaglio pagamenti" not in unimia_request_lower:
-		raise Exception('Page doesn\'t contain "dettaglio pagamenti"')
+#	Temporarily commented because unimi has changed the "Situazione amministrativa" box
+#	elif "dettaglio pagamenti" not in unimia_request_lower:
+#		raise Exception('Page doesn\'t contain "dettaglio pagamenti"')
 	else:
 		is_up         = True
 		response_time = round(unimia_request.elapsed.total_seconds()*1000)

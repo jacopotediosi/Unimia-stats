@@ -13,5 +13,5 @@ RUN apk update && \
     echo '0 7 */15 * * mysqldump -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE -r /tmp/$MYSQL_DATABASE.sql && GZIP=-9 tar -czf /downloads/latest_dump.tar.gz -C /tmp $MYSQL_DATABASE.sql /screenshot' >> /etc/crontabs/root && \
     rm -f /var/cache/apk/*
 
-# Start cron
-CMD [ "crond", "-l", "2", "-f" ]
+# Start cron in foreground, log level 6 (errors only)
+CMD [ "crond", "-f", "-d", "6" ]

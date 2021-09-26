@@ -83,8 +83,8 @@ try:
 		raise Exception('Page contains "</strong> 0" (indicating 0 CFU)')
 	elif "error" in unimia_request_lower:
 		raise Exception('Page contains "error"')
-	elif "tipo di iscrizione: </strong>in corso" not in unimia_request_lower:
-		raise Exception('Page doesn\'t contain "tipo di iscrizione: </strong>in corso"')
+	elif "tipo di iscrizione: </strong>in corso" not in unimia_request_lower and "tipo di iscrizione: </label>in corso" not in unimia_request_lower:
+		raise Exception('Page doesn\'t contain "tipo di iscrizione: in corso"')
 	elif "vuoi iscriverti" not in unimia_request_lower:
 		raise Exception('Page doesn\'t contain "vuoi iscriverti"')
 #	Temporarily commented because unimi has changed the "Situazione amministrativa" box
@@ -180,7 +180,7 @@ if not is_up and which_request_to_save != 0:
 				i_tuoi_dati=document.getElementById("div_profilo").getElementsByTagName("li")
 				for (i = 0; i < i_tuoi_dati.length; i++) {
 					console.log(i_tuoi_dati[i]);
-					i_tuoi_dati[i].innerHTML = i_tuoi_dati[i].innerHTML.replace(/(<strong>.+<\/strong>).*/ig, '$1 REDACTED');
+					i_tuoi_dati[i].innerHTML = i_tuoi_dati[i].innerHTML.replace(/(<label.*>.+<\/label>).*/ig, '$1 REDACTED');
 				}
 			} catch (e) {}
 
@@ -207,7 +207,7 @@ if not is_up and which_request_to_save != 0:
 			} catch (e) {}
 
 			// "CFU / Carriera" section
-			document.body.innerHTML = document.body.innerHTML.replace(/Dettaglio carriera ?- ?<\/strong>.+<\/p>/ig, 'Dettaglio carriera - </strong>REDACTED</p>');
+			document.body.innerHTML = document.body.innerHTML.replace(/Dettaglio carriera ?- ?<\/label>.+<\/p>/ig, 'Dettaglio carriera -</label> REDACTED</p>');
 			document.body.innerHTML = document.body.innerHTML.replace(/Esami registrati \(in piano\): ?<\/strong> ?(\d*)(\.\d+)?/ig, 'Esami registrati (in piano):</strong> REDACTED');
 			document.body.innerHTML = document.body.innerHTML.replace(/Media dei voti \(esami in piano\): ?<\/strong> ?(\d*)(\.\d+)?/ig, 'Media dei voti (esami in piano):</strong> REDACTED');
 			document.body.innerHTML = document.body.innerHTML.replace(/Ultimo esame in piano registrato: ?<\/strong>[^<]+/ig, 'Ultimo esame in piano registrato: </strong>REDACTED');

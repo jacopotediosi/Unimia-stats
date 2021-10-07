@@ -83,13 +83,10 @@ try:
 		raise Exception('Page contains "</strong> 0" (indicating 0 CFU)')
 	elif "error" in unimia_request_lower:
 		raise Exception('Page contains "error"')
-	elif "tipo di iscrizione: </strong>in corso" not in unimia_request_lower and "tipo di iscrizione: </label>in corso" not in unimia_request_lower:
-		raise Exception('Page doesn\'t contain "tipo di iscrizione: in corso"')
 	elif "vuoi iscriverti" not in unimia_request_lower:
 		raise Exception('Page doesn\'t contain "vuoi iscriverti"')
-#	Temporarily commented because unimi has changed the "Situazione amministrativa" box
-#	elif "dettaglio pagamenti" not in unimia_request_lower:
-#		raise Exception('Page doesn\'t contain "dettaglio pagamenti"')
+	elif "dettaglio pagamenti" not in unimia_request_lower:
+		raise Exception('Page doesn\'t contain "dettaglio pagamenti"')
 	else:
 		is_up         = True
 		response_time = round(unimia_request.elapsed.total_seconds()*1000)

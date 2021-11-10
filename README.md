@@ -20,7 +20,7 @@ You can install them via your favorite packet manager (e.g. `sudo apt install ng
 
 1. cd to your favorite project path (e.g. I sometimes use /opt/ or /var/docker/)
 2. git clone https://github.com/jacopotediosi/Unimia-stats.git
-3. cd Unimia-stats-master
+3. cd Unimia-stats-main
 4. create a folder named "sock" and double check it has the right permissions: `sudo chown $USER:docker sock && 2775`
 5. edit the docker-compose.yml file by entering your Unimia credentials and completing settings where necessary
 6. edit the install/unimia-stats.vhost configuration file, place it inside your nginx virtualhost folder (e.g. /etc/nginx/sites-available) and run `ln -s /etc/nginx/sites-available/unimia-stats.vhost /etc/nginx/sites-enabled && sudo service nginx reload`

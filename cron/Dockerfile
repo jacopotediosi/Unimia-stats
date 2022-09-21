@@ -6,7 +6,7 @@ COPY script.py requirements.txt /
 # Setup
 RUN apk update && \
     apk upgrade && \
-    apk add tzdata chromium chromium-chromedriver build-base jpeg-dev zlib-dev mariadb-client && \
+    apk add tzdata chromium chromium-chromedriver build-base jpeg-dev zlib-dev mariadb-client mariadb-connector-c-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main && \
     pip3 install -r /requirements.txt && \
     chmod 755 /script.py && \
     echo '*/10  *  *  *  * python3 /script.py' > /etc/crontabs/root && \

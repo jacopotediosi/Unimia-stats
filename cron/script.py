@@ -5,7 +5,7 @@ import os
 import re
 import time
 import requests
-import mysql.connector
+import mariadb
 from datetime import datetime
 from bs4 import BeautifulSoup as bs4
 from selenium import webdriver
@@ -98,7 +98,7 @@ except Exception as e:
 		print(date_time + ": " + str(e))
 
 # DB Connection
-db_conn = mysql.connector.connect(
+db_conn = mariadb.connect(
   host      = os.getenv("MYSQL_HOST"),
   user      = os.getenv("MYSQL_USER"),
   password  = os.getenv("MYSQL_PASSWORD"),

@@ -85,8 +85,8 @@ try:
 		raise Exception('Page contains "error"')
 	elif "vuoi iscriverti" not in unimia_request_lower:
 		raise Exception('Page doesn\'t contain "vuoi iscriverti"')
-	elif "dettaglio pagamenti" not in unimia_request_lower:
-		raise Exception('Page doesn\'t contain "dettaglio pagamenti"')
+	elif "dettaglio pagamenti" not in unimia_request_lower and "non sei iscritto al nuovo anno accademico" not in unimia_request_lower:
+		raise Exception('Page doesn\'t contain "dettaglio pagamenti" nor "non sei iscritto al nuovo anno accademico"')
 	else:
 		is_up         = True
 		response_time = round(unimia_request.elapsed.total_seconds()*1000)

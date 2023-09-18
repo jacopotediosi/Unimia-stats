@@ -1,11 +1,13 @@
+09/2023 UPDATE: DISCONTINUED AS I AM NO LONGER ENROLLED AT THE UNIVERSITY OF MILAN.
+
 # Unimia stats
 Unimia stats is a fully dockerized software, composed by 3 containers (php-fpm, mariadb and a python script launched via crontab) to check (simulating a real user login every N minutes) when unimia.unimi.it (the student career portal of the University of Milan) is down or slow and keep its health history, representing it through useful charts (a lot) and screenshots on a web interface.
 
 This project was made by students of computer science faculties to verify what Unimia's actual SLA is and to be able to possibly understand what are the difficulties of the portal and the errors most commonly encountered by users.
 
-It may be that it is easily adaptable to similar contexts or other websites.
+It may be easily adaptable to similar contexts or to other websites.
 
-Live demo available at https://unimia.webctf.it/
+~Live demo available at https://unimia.webctf.it/~
 
 # Features
 - Automatically check every N minutes if Unimia is working properly and if the page meets certain criteria (e.g. it does not contain the word "error" or "sqlexception").
